@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Staff - Apex College</title>
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <!-- App Container Layout -->
+  <div id="app-container">
+    <main id="main-content">
+      <!-- Dynamic Header & Sidebar injected by app.js -->
+      
+      <!-- Content Container -->
+      <div class="container-fluid p-4 animate-fade-in">
+        
+        <!-- Form Header -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h4 class="fw-bold mb-1">Edit Faculty Record</h4>
+            <p class="text-secondary" id="edit-header-sub">Update profile details and portal credentials for the selected faculty member.</p>
+          </div>
+        </div>
+
+        <!-- Data Loading Placeholder -->
+        <div id="loading-spinner" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading Faculty...</span>
+          </div>
+          <p class="text-secondary mt-2">Fetching faculty record...</p>
+        </div>
+
+        <!-- Not Found Alert -->
+        <div id="not-found-alert" class="alert alert-danger d-none my-4" role="alert">
+          <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+          <span>Faculty record not found. Please verify the URL ID or return to the <a href="staff.html" class="alert-link">Staff List</a>.</span>
+        </div>
+
+        <!-- Form Card -->
+        <div class="card glass-card p-4 d-none" id="edit-form-card">
+          <form id="edit-staff-form" onsubmit="handleFormSubmit(event)" novalidate>
+            
+            <!-- SECTION 1: Personal Details -->
+            <div class="mb-4">
+              <h5 class="fw-semibold mb-3 border-bottom pb-2 text-indigo" style="color: var(--primary-color);">
+                <i class="bi bi-person-fill me-2"></i>Personal Details
+              </h5>
+              <div class="row g-3">
+                <!-- Staff ID (Disabled) -->
+                <div class="col-12 col-md-4">
+                  <label for="staff-id" class="form-label small fw-medium text-secondary">Staff ID</label>
+                  <input type="text" id="staff-id" class="form-control bg-light" disabled>
+                  <div class="form-text" style="font-size: 0.75rem;">Staff ID cannot be edited.</div>
+                </div>
+
+                <!-- Full Name -->
+                <div class="col-12 col-md-4">
+                  <label for="full-name" class="form-label small fw-medium text-secondary">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" id="full-name" class="form-control" placeholder="Enter full name" onblur="validateField('full-name')" required>
+                </div>
+
+                <!-- Gender -->
+                <div class="col-12 col-md-4">
+                  <label for="gender" class="form-label small fw-medium text-secondary">Gender <span class="text-danger">*</span></label>
+                  <select id="gender" class="form-select" onblur="validateField('gender')" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="col-12 col-md-4">
+                  <label for="dob" class="form-label small fw-medium text-secondary">Date of Birth <span class="text-danger">*</span></label>
+                  <input type="date" id="dob" class="form-control" onblur="validateField('dob')" required>
+                </div>
+
+                <!-- Profile Photo URL -->
+                <div class="col-12 col-md-8">
+                  <label for="photo-url" class="form-label small fw-medium text-secondary">Profile Image URL (Optional)</label>
+                  <input type="url" id="photo-url" class="form-control" placeholder="https://example.com/photo.jpg">
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 2: Academic & Assignment Details -->
+            <div class="mb-4">
+              <h5 class="fw-semibold mb-3 border-bottom pb-2 text-indigo" style="color: var(--primary-color);">
+                <i class="bi bi-person-workspace me-2"></i>Academic & Assignment Details
+              </h5>
+              <div class="row g-3">
+                <!-- Department -->
+                <div class="col-12 col-md-4">
+                  <label for="department" class="form-label small fw-medium text-secondary">Department <span class="text-danger">*</span></label>
+                  <select id="department" class="form-select" onblur="validateField('department')" required>
+                    <option value="">Select Department</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Electronics & Communication">Electronics & Communication</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  </select>
+                </div>
+
+                <!-- Designation -->
+                <div class="col-12 col-md-4">
+                  <label for="designation" class="form-label small fw-medium text-secondary">Designation <span class="text-danger">*</span></label>
+                  <select id="designation" class="form-select" onblur="validateField('designation')" required>
+                    <option value="">Select Designation</option>
+                    <option value="Professor & HOD">Professor & HOD</option>
+                    <option value="Professor">Professor</option>
+                    <option value="Associate Professor">Associate Professor</option>
+                    <option value="Assistant Professor">Assistant Professor</option>
+                    <option value="Guest Lecturer">Guest Lecturer</option>
+                  </select>
+                </div>
+
+                <!-- Assigned Class / Section -->
+                <div class="col-12 col-md-4">
+                  <label for="assigned-class" class="form-label small fw-medium text-secondary">Assigned Class / Year <span class="text-danger">*</span></label>
+                  <select id="assigned-class" class="form-select" required>
+                    <option value="1st Year - A">1st Year - A</option>
+                    <option value="1st Year - B">1st Year - B</option>
+                    <option value="2nd Year - A">2nd Year - A</option>
+                    <option value="2nd Year - B">2nd Year - B</option>
+                    <option value="3rd Year - A">3rd Year - A</option>
+                    <option value="3rd Year - B">3rd Year - B</option>
+                    <option value="4th Year - A">4th Year - A</option>
+                    <option value="4th Year - B">4th Year - B</option>
+                  </select>
+                </div>
+
+                <!-- Subjects Taught -->
+                <div class="col-12">
+                  <label for="subjects" class="form-label small fw-medium text-secondary">Subjects Taught <span class="text-danger">*</span></label>
+                  <input type="text" id="subjects" class="form-control" placeholder="e.g. Programming, Database (Comma-separated values)" onblur="validateField('subjects')" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 3: Contact Details -->
+            <div class="mb-4">
+              <h5 class="fw-semibold mb-3 border-bottom pb-2 text-indigo" style="color: var(--primary-color);">
+                <i class="bi bi-telephone-fill me-2"></i>Contact Details
+              </h5>
+              <div class="row g-3">
+                <!-- Email Address -->
+                <div class="col-12 col-md-6">
+                  <label for="email" class="form-label small fw-medium text-secondary">Email Address <span class="text-danger">*</span></label>
+                  <input type="email" id="email" class="form-control" placeholder="name@college.edu" onblur="validateField('email')" required>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="col-12 col-md-6">
+                  <label for="phone" class="form-label small fw-medium text-secondary">Phone Number <span class="text-danger">*</span></label>
+                  <input type="tel" id="phone" class="form-control" placeholder="10-digit mobile number" onblur="validateField('phone')" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 4: Portal Login Credentials -->
+            <div class="mb-4">
+              <h5 class="fw-semibold mb-3 border-bottom pb-2 text-indigo" style="color: var(--primary-color);">
+                <i class="bi bi-key-fill me-2"></i>Portal Login Account
+              </h5>
+              <div class="row g-3">
+                <!-- Portal Username -->
+                <div class="col-12 col-md-6">
+                  <label for="username" class="form-label small fw-medium text-secondary">Portal Access Username <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-transparent text-secondary">@</span>
+                    <input type="text" id="username" class="form-control" placeholder="e.g. sarahj" onblur="validateField('username')" required>
+                  </div>
+                  <div class="form-text" style="font-size: 0.75rem;">Username used to access the portal. If changed, the login record will sync automatically.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions Row -->
+            <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top border-secondary border-opacity-10">
+              <a href="staff.html" class="btn btn-light px-4">Cancel</a>
+              <button type="submit" class="btn btn-primary px-5">Save Changes</button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Core Scripts -->
+  <script src="../js/app.js"></script>
+  <script src="../js/staff.js"></script>
+  <script src="../js/validation.js"></script>
+
+  <script>
+    let staffId = null;
+    let originalUsername = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        initForm();
+      }, 80);
+    });
+
+    function initForm() {
+      const params = new URLSearchParams(window.location.search);
+      staffId = params.get('id');
+
+      if (!staffId) {
+        document.getElementById('loading-spinner').classList.add('d-none');
+        document.getElementById('not-found-alert').classList.remove('d-none');
+        return;
+      }
+
+      const s = getStaffById(staffId);
+      document.getElementById('loading-spinner').classList.add('d-none');
+
+      if (!s) {
+        document.getElementById('not-found-alert').classList.remove('d-none');
+        return;
+      }
+
+      // Populate fields
+      document.getElementById('staff-id').value = s.id;
+      document.getElementById('full-name').value = s.name;
+      document.getElementById('gender').value = s.gender;
+      document.getElementById('dob').value = s.dob;
+      document.getElementById('photo-url').value = s.photoUrl || '';
+      document.getElementById('department').value = s.department;
+      document.getElementById('designation').value = s.designation;
+      document.getElementById('assigned-class').value = s.assignedClass || '1st Year - A';
+      document.getElementById('subjects').value = s.subjectsTaught;
+      document.getElementById('email').value = s.email;
+      document.getElementById('phone').value = s.phone;
+      document.getElementById('username').value = s.username;
+
+      originalUsername = s.username;
+      document.getElementById('edit-header-sub').textContent = `Update details for ${s.name} (${s.id}).`;
+      document.getElementById('edit-form-card').classList.remove('d-none');
+    }
+
+    function validateField(fieldId) {
+      const el = document.getElementById(fieldId);
+      if (!el) return true;
+
+      switch(fieldId) {
+        case 'full-name':
+          return Validation.validateRequired(el, "Full Name");
+        case 'dob':
+          return Validation.validateRequired(el, "Date of Birth");
+        case 'gender':
+          return Validation.validateRequired(el, "Gender");
+        case 'department':
+          return Validation.validateRequired(el, "Department");
+        case 'designation':
+          return Validation.validateRequired(el, "Designation");
+        case 'subjects':
+          return Validation.validateRequired(el, "Subjects Taught");
+        case 'email':
+          return Validation.validateEmail(el);
+        case 'phone':
+          return Validation.validatePhone(el, "Phone Number");
+        case 'username':
+          return Validation.validateUsernameUnique(el, originalUsername);
+        default:
+          return true;
+      }
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const fieldsToValidate = [
+        'full-name', 'gender', 'dob',
+        'department', 'designation', 'subjects', 'email', 'phone', 'username'
+      ];
+
+      let isFormValid = true;
+      fieldsToValidate.forEach(fieldId => {
+        const isValid = validateField(fieldId);
+        if (!isValid) isFormValid = false;
+      });
+
+      if (!isFormValid) {
+        showToast("Please correct the errors in the form.", "danger");
+        return;
+      }
+
+      // Collect data
+      const updatedStaff = {
+        name: document.getElementById('full-name').value.trim(),
+        gender: document.getElementById('gender').value,
+        dob: document.getElementById('dob').value,
+        photoUrl: document.getElementById('photo-url').value.trim(),
+        department: document.getElementById('department').value,
+        designation: document.getElementById('designation').value,
+        assignedClass: document.getElementById('assigned-class').value,
+        subjectsTaught: document.getElementById('subjects').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        username: document.getElementById('username').value.trim().toLowerCase()
+      };
+
+      try {
+        updateStaff(staffId, updatedStaff);
+        showToast("Faculty details saved successfully!", "success");
+        setTimeout(() => {
+          window.location.href = 'staff.html';
+        }, 1200);
+      } catch(err) {
+        showToast("Failed to save changes: " + err.message, "danger");
+      }
+    }
+  </script>
+</body>
+</html>

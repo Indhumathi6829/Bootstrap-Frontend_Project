@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Dashboard - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Hero Banner -->
+      <div class="dashboard-hero-banner mb-4" id="staff-hero">
+        <div class="row align-items-center">
+          <div class="col-12 col-md-8">
+            <h4 class="fw-bold mb-1" id="hero-greeting">Welcome back, Faculty!</h4>
+            <p class="mb-0 opacity-80" id="hero-sub">Here's a quick look at your class assignments and tasks for today.</p>
+          </div>
+          <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="opacity-75 small" id="hero-date"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick KPI Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <p class="text-secondary small mb-1">Assigned Students</p>
+                <h2 class="fw-bold mb-0" id="kpi-assigned-students">0</h2>
+              </div>
+              <div class="rounded-3 p-2 bg-primary bg-opacity-10 text-primary"><i class="bi bi-people fs-4"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <p class="text-secondary small mb-1">Avg Class Attendance</p>
+                <h2 class="fw-bold mb-0" id="kpi-class-attendance">0%</h2>
+              </div>
+              <div class="rounded-3 p-2 bg-success bg-opacity-10 text-success"><i class="bi bi-calendar-check fs-4"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <p class="text-secondary small mb-1">Class Avg CGPA</p>
+                <h2 class="fw-bold mb-0" id="kpi-class-cgpa">0.00</h2>
+              </div>
+              <div class="rounded-3 p-2 bg-warning bg-opacity-10 text-warning"><i class="bi bi-award fs-4"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <p class="text-secondary small mb-1">At-Risk Students</p>
+                <h2 class="fw-bold mb-0 text-danger" id="kpi-at-risk">0</h2>
+              </div>
+              <div class="rounded-3 p-2 bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-triangle fs-4"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Left: Quick Actions + Today's Task Cues -->
+        <div class="col-12 col-lg-4">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Quick Actions</h5>
+            <div class="d-flex flex-column gap-3">
+              <a href="attendance.html" class="btn btn-primary d-flex align-items-center gap-2 text-start">
+                <i class="bi bi-calendar-check fs-5"></i>
+                <div>
+                  <div class="fw-semibold">Mark Today's Attendance</div>
+                  <small class="opacity-75">Record roll call for your class</small>
+                </div>
+              </a>
+              <a href="marks.html" class="btn btn-outline-primary d-flex align-items-center gap-2 text-start">
+                <i class="bi bi-journal-check fs-5"></i>
+                <div>
+                  <div class="fw-semibold">Enter Student Marks</div>
+                  <small class="opacity-75">Update exam scores</small>
+                </div>
+              </a>
+              <a href="announcements.html" class="btn btn-outline-secondary d-flex align-items-center gap-2 text-start">
+                <i class="bi bi-megaphone fs-5"></i>
+                <div>
+                  <div class="fw-semibold">Post Announcement</div>
+                  <small class="opacity-75">Broadcast notice to students</small>
+                </div>
+              </a>
+              <a href="my-students.html" class="btn btn-outline-secondary d-flex align-items-center gap-2 text-start">
+                <i class="bi bi-people fs-5"></i>
+                <div>
+                  <div class="fw-semibold">View My Students</div>
+                  <small class="opacity-75">Browse class roster</small>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Assigned Class Roster Preview -->
+        <div class="col-12 col-lg-8">
+          <div class="card glass-card p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="fw-bold mb-0">My Class Roster</h5>
+              <a href="my-students.html" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>CGPA</th>
+                    <th>Attendance</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="roster-preview-tbody">
+                  <tr><td colspan="5" class="text-center text-secondary py-4">Loading roster...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Announcements -->
+      <div class="card glass-card p-4 mt-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-megaphone me-2"></i>Recent College Announcements</h5>
+          <a href="announcements.html" class="btn btn-sm btn-outline-primary">All Notices</a>
+        </div>
+        <div id="recent-announcements" class="d-flex flex-column gap-3">
+          <p class="text-secondary text-center py-2">No announcements to show.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadStaffDashboard, 100);
+  });
+
+  function loadStaffDashboard() {
+    const session = getSession();
+    if (!session) return;
+
+    // Set greeting
+    const hour = new Date().getHours();
+    const greetWord = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+    document.getElementById('hero-greeting').textContent = `${greetWord}, ${session.username}!`;
+
+    const dateStr = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('hero-date').textContent = dateStr;
+
+    // Load staff profile to get assigned class
+    const staffRecord = getStaffById(session.linkedId);
+    if (staffRecord) {
+      document.getElementById('hero-sub').textContent = `Dept: ${staffRecord.department} · Class: ${staffRecord.assignedClass} · Subjects: ${staffRecord.subjectsTaught}`;
+    }
+
+    // Get all students in this staff's assigned class
+    const allStudents = getAllStudents();
+    let myStudents = allStudents;
+
+    if (staffRecord && staffRecord.assignedClass) {
+      // Filter by class - match year from assignedClass e.g. "2nd Year - A"
+      const yearPart = staffRecord.assignedClass.split(' - ')[0]; // "2nd Year"
+      const sectionPart = staffRecord.assignedClass.split(' - ')[1]; // "A"
+      myStudents = allStudents.filter(s => s.year === yearPart && (s.section === sectionPart || !s.section));
+    }
+
+    // KPIs
+    document.getElementById('kpi-assigned-students').textContent = myStudents.length;
+
+    if (myStudents.length > 0) {
+      const avgAtt = (myStudents.reduce((acc, s) => acc + (s.attendancePercent || 0), 0) / myStudents.length).toFixed(1);
+      const avgCgpa = (myStudents.reduce((acc, s) => acc + (s.cgpa || 0), 0) / myStudents.length).toFixed(2);
+      const atRisk = myStudents.filter(s => s.attendancePercent < 75 || s.cgpa < 5.0).length;
+
+      document.getElementById('kpi-class-attendance').textContent = `${avgAtt}%`;
+      document.getElementById('kpi-class-cgpa').textContent = avgCgpa;
+      document.getElementById('kpi-at-risk').textContent = atRisk;
+    }
+
+    // Render first 8 students in roster preview
+    const tbody = document.getElementById('roster-preview-tbody');
+    tbody.innerHTML = '';
+    const preview = myStudents.slice(0, 8);
+    if (preview.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">No students found for your assigned class.</td></tr>`;
+    } else {
+      preview.forEach(s => {
+        const attColor = s.attendancePercent < 75 ? 'text-danger' : 'text-success';
+        const risk = (s.attendancePercent < 75 || s.cgpa < 5.0);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="small fw-medium">${s.id}</td>
+          <td>
+            <div class="fw-semibold">${s.name}</div>
+            <small class="text-secondary">${s.rollNumber}</small>
+          </td>
+          <td><strong>${(s.cgpa || 0).toFixed(2)}</strong></td>
+          <td><span class="${attColor} fw-semibold">${s.attendancePercent}%</span></td>
+          <td>${risk ? '<span class="badge bg-danger">At Risk</span>' : '<span class="badge bg-success">Good</span>'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Recent announcements
+    const announcements = JSON.parse(localStorage.getItem('cms_announcements') || '[]');
+    const filtered = announcements.filter(a => a.audience === 'All' || a.audience === 'Staff Only').slice(0, 3);
+    const annContainer = document.getElementById('recent-announcements');
+    annContainer.innerHTML = '';
+    if (filtered.length === 0) {
+      annContainer.innerHTML = `<p class="text-secondary text-center py-2 small">No announcements to display.</p>`;
+    } else {
+      filtered.forEach(a => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-3 border border-secondary border-opacity-25';
+        div.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <h6 class="fw-semibold mb-1">${a.title}</h6>
+            <small class="text-secondary text-nowrap">${a.date}</small>
+          </div>
+          <p class="small text-secondary mb-0">${a.message.substring(0, 120)}${a.message.length > 120 ? '...' : ''}</p>
+        `;
+        annContainer.appendChild(div);
+      });
+    }
+  }
+</script>
+</body>
+</html>

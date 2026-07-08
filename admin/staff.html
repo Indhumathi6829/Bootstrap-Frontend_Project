@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Directory - Apex College</title>
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <!-- Top Navbar and Sidebar injected by app.js -->
+
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Header Card -->
+      <div class="card glass-card p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+          <div>
+            <h4 class="fw-bold mb-1">Staff Directory</h4>
+            <p class="text-secondary mb-0 small">Search and manage college faculty and admin accounts.</p>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="add-staff.html" class="btn btn-primary d-flex align-items-center gap-2">
+              <i class="bi bi-person-plus"></i> Add New Faculty
+            </a>
+          </div>
+        </div>
+
+        <!-- Search + Filters -->
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent text-secondary border-end-0"><i class="bi bi-search"></i></span>
+              <input type="text" id="search-input" class="form-control border-start-0" placeholder="Search name, ID, subjects, designations…" oninput="onFilterChanged()">
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <select id="filter-department" class="form-select" onchange="onFilterChanged()">
+              <option value="">All Departments</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Electronics & Communication">Electronics & Communication</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-3">
+            <select id="sort-select" class="form-select" onchange="onFilterChanged()">
+              <option value="name-asc">Name (A→Z)</option>
+              <option value="name-desc">Name (Z→A)</option>
+              <option value="id-asc">Staff ID</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="card glass-card p-4">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th style="width:100px;">Staff ID</th>
+                <th>Name & Username</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Assigned Class</th>
+                <th>Subjects Taught</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="staff-table-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mt-4 pt-3 border-top border-secondary border-opacity-10">
+          <div class="text-secondary small" id="pagination-status">Showing 0 of 0</div>
+          <ul class="pagination pagination-sm mb-0" id="pagination-list"></ul>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-secondary">
+        Delete Faculty member <strong id="delete-staff-name" class="text-dark"></strong>? This will permanently remove their records and portal login credentials.
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button id="confirm-delete-btn" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core Scripts -->
+<script src="../js/app.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  let filteredStaff = [];
+  let currentPage = 1;
+  const pageSize = 10;
+  let deleteModal = null;
+  let targetDeleteId = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    document.getElementById('confirm-delete-btn').addEventListener('click', executeDelete);
+    setTimeout(onFilterChanged, 60);
+  });
+
+  function onFilterChanged() {
+    const q = document.getElementById('search-input').value.toLowerCase().trim();
+    const dept = document.getElementById('filter-department').value;
+    const sort = document.getElementById('sort-select').value;
+
+    filteredStaff = getAllStaff().filter(s => {
+      const matchQ = !q || s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q) ||
+                     s.designation.toLowerCase().includes(q) || s.subjectsTaught.toLowerCase().includes(q) ||
+                     s.username.toLowerCase().includes(q);
+      return matchQ && (!dept || s.department === dept);
+    });
+
+    filteredStaff.sort((a, b) => {
+      if (sort === 'name-asc') return a.name.localeCompare(b.name);
+      if (sort === 'name-desc') return b.name.localeCompare(a.name);
+      if (sort === 'id-asc') return a.id.localeCompare(b.id);
+      return 0;
+    });
+
+    currentPage = 1;
+    renderTable();
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('staff-table-body');
+    tbody.innerHTML = '';
+    const total = filteredStaff.length;
+
+    if (total === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5">
+        <i class="bi bi-person-slash d-block fs-1 mb-2 opacity-25"></i>
+        <span class="text-secondary">No faculty records match your criteria. <a href="add-staff.html">Add one?</a></span>
+      </td></tr>`;
+      document.getElementById('pagination-status').textContent = 'No records found';
+      document.getElementById('pagination-list').innerHTML = '';
+      return;
+    }
+
+    const totalPages = Math.ceil(total / pageSize);
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * pageSize;
+    const end = Math.min(start + pageSize, total);
+    const page = filteredStaff.slice(start, end);
+
+    page.forEach(s => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="fw-medium small">${s.id}</td>
+        <td>
+          <div class="fw-semibold">${s.name}</div>
+          <small class="text-secondary">Username: @${s.username} · ${s.email}</small>
+        </td>
+        <td><small>${s.department}</small></td>
+        <td><span class="badge bg-secondary bg-opacity-10 text-dark-theme-override" style="color:var(--text-primary); border: 1px solid var(--border-color);">${s.designation}</span></td>
+        <td><small class="fw-medium">${s.assignedClass || 'N/A'}</small></td>
+        <td><small class="text-secondary">${s.subjectsTaught}</small></td>
+        <td class="text-end">
+          <div class="d-flex justify-content-end gap-1">
+            <a href="edit-staff.html?id=${s.id}" class="btn btn-sm btn-outline-primary" title="Edit Staff"><i class="bi bi-pencil"></i></a>
+            <button onclick="promptDeleteStaff('${s.id}','${s.name.replace(/'/g,"\\'")}')" class="btn btn-sm btn-outline-danger" title="Delete Staff"><i class="bi bi-trash"></i></button>
+          </div>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('pagination-status').textContent = `Showing ${start+1}–${end} of ${total} faculty members`;
+
+    // Render Pagination List
+    const pagList = document.getElementById('pagination-list');
+    pagList.innerHTML = '';
+    
+    // Prev button
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `<button class="page-link" onclick="changePage(${currentPage - 1})">Prev</button>`;
+    pagList.appendChild(prevLi);
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = `page-item ${currentPage === i ? 'active' : ''}`;
+      li.innerHTML = `<button class="page-link" onclick="changePage(${i})">${i}</button>`;
+      pagList.appendChild(li);
+    }
+
+    // Next button
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+    nextLi.innerHTML = `<button class="page-link" onclick="changePage(${currentPage + 1})">Next</button>`;
+    pagList.appendChild(nextLi);
+  }
+
+  function changePage(page) {
+    if (page < 1 || page > Math.ceil(filteredStaff.length / pageSize)) return;
+    currentPage = page;
+    renderTable();
+  }
+
+  function promptDeleteStaff(id, name) {
+    targetDeleteId = id;
+    document.getElementById('delete-staff-name').textContent = name;
+    deleteModal.show();
+  }
+
+  function executeDelete() {
+    if (!targetDeleteId) return;
+    try {
+      deleteStaff(targetDeleteId);
+      deleteModal.hide();
+      showToast("Faculty member deleted successfully.", "success");
+      onFilterChanged();
+    } catch(err) {
+      showToast(err.message, "danger");
+    }
+    targetDeleteId = null;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Hero Banner -->
+      <div class="dashboard-hero-banner mb-4">
+        <div class="row align-items-center">
+          <div class="col-12 col-md-8">
+            <h4 class="fw-bold mb-1" id="hero-greeting">Welcome back!</h4>
+            <p class="mb-0 opacity-80" id="hero-sub">Here's your academic snapshot for today.</p>
+          </div>
+          <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0 opacity-75 small" id="hero-date"></div>
+        </div>
+      </div>
+
+      <!-- Academic KPI Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <p class="text-secondary small mb-1">My CGPA</p>
+            <h2 class="fw-bold mb-0" id="kpi-cgpa" style="color: var(--secondary-color);">0.00</h2>
+            <small class="text-secondary" id="kpi-grade">Grade: F</small>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <p class="text-secondary small mb-1">Attendance</p>
+            <h2 class="fw-bold mb-0" id="kpi-att">0%</h2>
+            <small class="text-secondary" id="kpi-att-status">—</small>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <p class="text-secondary small mb-1">Department</p>
+            <h5 class="fw-bold mb-0" id="kpi-dept">—</h5>
+            <small class="text-secondary" id="kpi-year">—</small>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <p class="text-secondary small mb-1">Roll Number</p>
+            <h4 class="fw-bold mb-0" id="kpi-roll">—</h4>
+            <small class="text-secondary" id="kpi-section">—</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+        <!-- Academic Scorecard Summary -->
+        <div class="col-12 col-lg-7">
+          <div class="card glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0">Subject Scores</h5>
+              <a href="my-marks.html" class="btn btn-sm btn-outline-primary">View Report Card</a>
+            </div>
+            <div id="subject-bars"></div>
+          </div>
+        </div>
+
+        <!-- Quick Navigation -->
+        <div class="col-12 col-lg-5">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3">Quick Navigation</h5>
+            <div class="d-flex flex-column gap-3">
+              <a href="my-profile.html" class="btn btn-outline-primary text-start d-flex align-items-center gap-2"><i class="bi bi-person-bounding-box fs-5"></i><div><div class="fw-semibold">Academic Profile</div><small class="opacity-75">View full profile & details</small></div></a>
+              <a href="my-attendance.html" class="btn btn-outline-secondary text-start d-flex align-items-center gap-2"><i class="bi bi-calendar-check fs-5"></i><div><div class="fw-semibold">Attendance History</div><small class="opacity-75">View all roll call records</small></div></a>
+              <a href="timetable.html" class="btn btn-outline-secondary text-start d-flex align-items-center gap-2"><i class="bi bi-calendar3 fs-5"></i><div><div class="fw-semibold">Weekly Timetable</div><small class="opacity-75">Class schedule for this week</small></div></a>
+              <a href="announcements.html" class="btn btn-outline-secondary text-start d-flex align-items-center gap-2"><i class="bi bi-megaphone fs-5"></i><div><div class="fw-semibold">Announcements</div><small class="opacity-75">College notices & broadcasts</small></div></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Latest Announcements -->
+      <div class="card glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-megaphone me-2"></i>Latest Notices for You</h5>
+          <a href="announcements.html" class="btn btn-sm btn-outline-primary">All Notices</a>
+        </div>
+        <div id="latest-notices" class="d-flex flex-column gap-3">
+          <p class="text-secondary text-center small py-2">No notices to display.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadStudentDashboard, 100);
+  });
+
+  function loadStudentDashboard() {
+    const session = getSession();
+    if (!session) return;
+
+    const student = getStudentById(session.linkedId);
+    if (!student) return;
+
+    const hour = new Date().getHours();
+    const greetWord = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+    document.getElementById('hero-greeting').textContent = `${greetWord}, ${student.name.split(' ')[0]}!`;
+    document.getElementById('hero-sub').textContent = `${student.department} · ${student.year} · Section ${student.section || 'A'}`;
+    document.getElementById('hero-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // KPIs
+    const summary = calculateMarksSummary(session.linkedId);
+    document.getElementById('kpi-cgpa').textContent = (student.cgpa || 0).toFixed(2);
+    document.getElementById('kpi-grade').textContent = `Grade: ${summary.grade}`;
+
+    const attEl = document.getElementById('kpi-att');
+    attEl.textContent = `${student.attendancePercent}%`;
+    attEl.className = `fw-bold mb-0 ${student.attendancePercent < 75 ? 'text-danger' : 'text-success'}`;
+    document.getElementById('kpi-att-status').textContent = student.attendancePercent < 75 ? '⚠ Below 75% limit' : '✓ Good standing';
+
+    document.getElementById('kpi-dept').textContent = student.department;
+    document.getElementById('kpi-year').textContent = `${student.year} · Sem ${student.semester}`;
+    document.getElementById('kpi-roll').textContent = student.rollNumber;
+    document.getElementById('kpi-section').textContent = `Section ${student.section || 'A'} · ${student.id}`;
+
+    // Subject bars
+    const marks = summary.marks;
+    const subjects = [
+      { key: 'mathematics', label: 'Mathematics' },
+      { key: 'programming', label: 'Programming' },
+      { key: 'database', label: 'Database Systems' },
+      { key: 'operatingSystems', label: 'Operating Systems' },
+      { key: 'computerNetworks', label: 'Computer Networks' }
+    ];
+    const barsContainer = document.getElementById('subject-bars');
+    barsContainer.innerHTML = '';
+    subjects.forEach(sub => {
+      const val = marks[sub.key] || 0;
+      const color = val >= 75 ? 'bg-success' : val >= 50 ? 'bg-warning' : 'bg-danger';
+      const div = document.createElement('div');
+      div.className = 'mb-3';
+      div.innerHTML = `
+        <div class="d-flex justify-content-between small mb-1">
+          <span class="text-secondary">${sub.label}</span>
+          <strong>${val} / 100</strong>
+        </div>
+        <div class="progress" style="height: 8px; border-radius: 6px;">
+          <div class="progress-bar ${color}" style="width: ${val}%; border-radius: 6px;"></div>
+        </div>
+      `;
+      barsContainer.appendChild(div);
+    });
+
+    // Announcements
+    const notices = JSON.parse(localStorage.getItem('cms_announcements') || '[]')
+      .filter(a => a.audience === 'All' || a.audience === 'Students Only')
+      .slice(0, 3);
+    const noticeContainer = document.getElementById('latest-notices');
+    noticeContainer.innerHTML = '';
+    if (notices.length === 0) {
+      noticeContainer.innerHTML = `<p class="text-secondary text-center small py-2">No notices to display.</p>`;
+    } else {
+      notices.forEach(a => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-3 border border-secondary border-opacity-25';
+        div.innerHTML = `
+          <div class="d-flex justify-content-between">
+            <h6 class="fw-semibold mb-1">${a.title}</h6>
+            <small class="text-secondary text-nowrap">${a.date}</small>
+          </div>
+          <p class="small text-secondary mb-0">${a.message.substring(0, 100)}${a.message.length > 100 ? '...' : ''}</p>
+        `;
+        noticeContainer.appendChild(div);
+      });
+    }
+  }
+</script>
+</body>
+</html>

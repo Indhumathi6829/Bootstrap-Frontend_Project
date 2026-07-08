@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Reports - Apex College</title>
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .report-kpi-card {
+      border-radius: 1rem;
+      background: linear-gradient(135deg, var(--primary-color) 0%, #1e1b4b 100%);
+      color: #fff;
+      padding: 1.5rem;
+      border: none;
+    }
+    .report-kpi-card .kpi-num { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+    .report-kpi-card .kpi-label { font-size: 0.75rem; opacity: .75; text-transform: uppercase; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <!-- Dynamic Header & Sidebar injected by app.js -->
+
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Hero Banner -->
+      <div class="dashboard-hero-banner mb-4">
+        <div class="row align-items-center">
+          <div class="col-12 col-md-8">
+            <h4 class="fw-bold mb-1"><i class="bi bi-graph-up-arrow me-2"></i>Analytics Reports</h4>
+            <p class="mb-0 opacity-80">Comprehensive academic progress and attendance reviews across all classes.</p>
+          </div>
+          <div class="col-12 col-md-4 d-flex justify-content-md-end gap-2 mt-3 mt-md-0 no-print">
+            <button onclick="window.print()" class="btn btn-outline-light d-flex align-items-center gap-2">
+              <i class="bi bi-printer"></i> Print Report
+            </button>
+            <button onclick="exportReportsCSV()" class="btn btn-light fw-semibold d-flex align-items-center gap-2">
+              <i class="bi bi-download"></i> Export Analytics CSV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="row g-4 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="card report-kpi-card h-100">
+            <div class="kpi-label mb-1">Total Enrolled</div>
+            <div class="kpi-num" id="kpi-total">0</div>
+            <small class="mt-1 d-block opacity-75">Students recorded</small>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <div class="text-secondary small fw-medium">College Average GPA</div>
+            <div class="fw-bold mt-1" style="font-size:2rem;" id="kpi-cgpa">0.00</div>
+            <div class="text-secondary small" id="kpi-high-performers">0 students &ge; 9.00</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <div class="text-secondary small fw-medium">College Attendance</div>
+            <div class="fw-bold mt-1" style="font-size:2rem;" id="kpi-attendance">0%</div>
+            <div class="text-secondary small text-danger" id="kpi-att-risk">0 below 75% limit</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card glass-card p-4 h-100">
+            <div class="text-secondary small fw-medium">Academic Pass Rate</div>
+            <div class="fw-bold mt-1 text-success" style="font-size:2rem;" id="kpi-pass-rate">0%</div>
+            <div class="text-secondary small">CGPA &ge; 5.0 considered passing</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Department summaries -->
+      <div class="card glass-card p-4 mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-building me-2 text-indigo"></i>Department summary statistics</h5>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Department Name</th>
+                <th>Enrolled Students</th>
+                <th>Assigned Faculty</th>
+                <th>Average CGPA</th>
+                <th>Average Attendance</th>
+              </tr>
+            </thead>
+            <tbody id="dept-summary-rows">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- At-Risk and Top Performers tables -->
+      <div class="row g-4">
+        <!-- At-Risk Table -->
+        <div class="col-12 col-lg-6">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>At-Risk Students</h5>
+            <p class="text-secondary small mb-3">Students flagged due to CGPA < 6.00 or Attendance < 75%.</p>
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>ID &amp; Name</th>
+                    <th>Dept</th>
+                    <th>CGPA</th>
+                    <th>Attendance</th>
+                  </tr>
+                </thead>
+                <tbody id="at-risk-tbody">
+                  <!-- Dynamically filled -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Performers Table -->
+        <div class="col-12 col-lg-6">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 text-success"><i class="bi bi-award-fill me-2"></i>Top 5 Performers</h5>
+            <p class="text-secondary small mb-3">Highest ranking academic achievers sorted by CGPA.</p>
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>ID &amp; Name</th>
+                    <th>Department</th>
+                    <th>CGPA</th>
+                  </tr>
+                </thead>
+                <tbody id="top-performers-tbody">
+                  <!-- Dynamically filled -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core Scripts -->
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadReportData, 80);
+  });
+
+  function loadReportData() {
+    const students = getAllStudents();
+    const staffList = getAllStaff();
+
+    // 1. Populate top KPIs
+    document.getElementById('kpi-total').textContent = students.length;
+    
+    if (students.length === 0) {
+      document.getElementById('kpi-cgpa').textContent = '0.00';
+      document.getElementById('kpi-attendance').textContent = '0%';
+      document.getElementById('kpi-pass-rate').textContent = '0%';
+      return;
+    }
+
+    const avgCgpa = (students.reduce((acc,s) => acc + (s.cgpa || 0), 0) / students.length).toFixed(2);
+    document.getElementById('kpi-cgpa').textContent = avgCgpa;
+
+    const highGPA = students.filter(s => s.cgpa >= 9.0).length;
+    document.getElementById('kpi-high-performers').textContent = `${highGPA} students \u2265 9.00`;
+
+    const avgAtt = (students.reduce((acc,s) => acc + (s.attendancePercent || 0), 0) / students.length).toFixed(1);
+    document.getElementById('kpi-attendance').textContent = `${avgAtt}%`;
+
+    const lowAtt = students.filter(s => s.attendancePercent < 75).length;
+    document.getElementById('kpi-att-risk').textContent = `${lowAtt} below 75% limit`;
+
+    const passCount = students.filter(s => s.cgpa >= 5.0).length;
+    const passRate = ((passCount / students.length) * 100).toFixed(1);
+    document.getElementById('kpi-pass-rate').textContent = `${passRate}%`;
+
+    // 2. Department Summary Table
+    const depts = ["Computer Science", "Electronics & Communication", "Information Technology", "Mechanical Engineering"];
+    const tbodyDepts = document.getElementById('dept-summary-rows');
+    tbodyDepts.innerHTML = '';
+
+    depts.forEach(dept => {
+      const deptStudents = students.filter(s => s.department === dept);
+      const deptStaffCount = staffList.filter(st => st.department === dept).length;
+
+      let avgDeptCgpa = '0.00';
+      let avgDeptAtt = '0%';
+
+      if (deptStudents.length > 0) {
+        avgDeptCgpa = (deptStudents.reduce((acc,s) => acc + (s.cgpa || 0), 0) / deptStudents.length).toFixed(2);
+        avgDeptAtt = `${(deptStudents.reduce((acc,s) => acc + (s.attendancePercent || 0), 0) / deptStudents.length).toFixed(1)}%`;
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="fw-semibold">${dept}</td>
+        <td>${deptStudents.length} Students</td>
+        <td>${deptStaffCount} Faculty</td>
+        <td><strong class="text-indigo">${avgDeptCgpa}</strong></td>
+        <td>${avgDeptAtt}</td>
+      `;
+      tbodyDepts.appendChild(tr);
+    });
+
+    // 3. At-Risk Table (attendance < 75 or CGPA < 6.0)
+    const atRiskList = students.filter(s => s.attendancePercent < 75 || s.cgpa < 6.0);
+    const tbodyRisk = document.getElementById('at-risk-tbody');
+    tbodyRisk.innerHTML = '';
+
+    if (atRiskList.length === 0) {
+      tbodyRisk.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-3">No students flagged at risk!</td></tr>`;
+    } else {
+      atRiskList.forEach(s => {
+        const cgpaClass = s.cgpa < 6.0 ? 'text-danger fw-bold' : '';
+        const attClass = s.attendancePercent < 75 ? 'text-danger fw-bold' : '';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class="fw-semibold text-truncate" style="max-width:140px;">${s.name}</div>
+            <small class="text-secondary">${s.id}</small>
+          </td>
+          <td><small>${s.department.split(' ').map(w=>w[0]).join('')}</small></td>
+          <td><span class="${cgpaClass}">${(s.cgpa || 0).toFixed(2)}</span></td>
+          <td><span class="${attClass}">${s.attendancePercent}%</span></td>
+        `;
+        tbodyRisk.appendChild(tr);
+      });
+    }
+
+    // 4. Top Achievers
+    const topPerformers = [...students].sort((a,b) => b.cgpa - a.cgpa).slice(0, 5);
+    const tbodyTop = document.getElementById('top-performers-tbody');
+    tbodyTop.innerHTML = '';
+
+    topPerformers.forEach((s, idx) => {
+      let badgeColor = 'rank-other';
+      if (idx === 0) badgeColor = 'rank-1';
+      if (idx === 1) badgeColor = 'rank-2';
+      if (idx === 2) badgeColor = 'rank-3';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="leader-rank-badge ${badgeColor}">${idx + 1}</span></td>
+        <td>
+          <div class="fw-semibold">${s.name}</div>
+          <small class="text-secondary">${s.id} · Roll: ${s.rollNumber}</small>
+        </td>
+        <td><small>${s.department}</small></td>
+        <td><strong style="color: var(--secondary-color);">${s.cgpa.toFixed(2)}</strong></td>
+      `;
+      tbodyTop.appendChild(tr);
+    });
+  }
+
+  function exportReportsCSV() {
+    const students = getAllStudents();
+    if (students.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+    
+    // Simplistic export of summary aggregates
+    const rows = [
+      ["Apex College Summary Analytics Report"],
+      ["Date Generated", new Date().toISOString().split('T')[0]],
+      [],
+      ["Department", "Enrolled Students", "Average CGPA", "Average Attendance"]
+    ];
+
+    const depts = ["Computer Science", "Electronics & Communication", "Information Technology", "Mechanical Engineering"];
+    depts.forEach(dept => {
+      const deptStudents = students.filter(s => s.department === dept);
+      let avgDeptCgpa = 0;
+      let avgDeptAtt = 0;
+      if (deptStudents.length > 0) {
+        avgDeptCgpa = (deptStudents.reduce((acc,s) => acc + (s.cgpa || 0), 0) / deptStudents.length).toFixed(2);
+        avgDeptAtt = (deptStudents.reduce((acc,s) => acc + (s.attendancePercent || 0), 0) / deptStudents.length).toFixed(1);
+      }
+      rows.push([dept, deptStudents.length, avgDeptCgpa, avgDeptAtt + "%"]);
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `apex_college_analytics_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Log Activity
+    logActivity('REPORTS EXPORTED', 'General department summary report exported as CSV.', 'info');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Apex College</title>
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .stat-highlight-card {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #1e1b4b 100%);
+      color: #ffffff;
+      border-radius: 1rem;
+      border: none;
+    }
+    .stat-highlight-card .stat-num { font-size: 3rem; font-weight: 700; line-height: 1; }
+    .stat-highlight-card .stat-label { font-size: 0.8rem; opacity: 0.75; text-transform: uppercase; letter-spacing: 1px; }
+
+    .stat-small-card { border-radius: 1rem; transition: transform 0.2s; }
+    .stat-small-card:hover { transform: translateY(-3px); }
+
+    .chart-card { border-radius: 1rem; }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+  <main id="main-content">
+    <!-- Top Navbar is dynamically injected by app.js -->
+
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- === HERO BANNER === -->
+      <div class="dashboard-hero-banner mb-4">
+        <div class="row align-items-center">
+          <div class="col-12 col-md-8">
+            <p class="mb-1 opacity-75 small fw-medium text-uppercase">
+              <i class="bi bi-calendar3 me-1"></i> <span id="hero-date"></span>
+            </p>
+            <h2 class="fw-bold mb-1">Welcome back, <span id="hero-username">Admin</span>!</h2>
+            <p class="mb-0 opacity-80" id="hero-tagline">Excellence in Education Since 1985 &mdash; Here's your college oversight at a glance.</p>
+          </div>
+          <div class="col-12 col-md-4 d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
+            <a href="add-student.html" class="btn btn-light fw-semibold d-flex align-items-center gap-2">
+              <i class="bi bi-person-plus-fill text-primary"></i> Enroll Student
+            </a>
+            <a href="add-staff.html" class="btn btn-outline-light fw-semibold d-flex align-items-center gap-2">
+              <i class="bi bi-person-badge-fill"></i> Add Staff
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- === STATS ROW === -->
+      <div class="row g-4 mb-4">
+        <!-- Total Students -->
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="card stat-highlight-card h-100 p-4 relative">
+            <div class="stat-label mb-2">Total Students</div>
+            <div class="stat-num mb-1" id="stat-total-students">0</div>
+            <p class="small opacity-75 mb-0" id="stat-students-sub">Active Enrolled</p>
+            <i class="bi bi-mortarboard-fill position-absolute opacity-10" style="font-size: 5rem; right: 1rem; bottom: 0.5rem; pointer-events: none;"></i>
+          </div>
+        </div>
+
+        <!-- Total Faculty -->
+        <div class="col-6 col-xl-3">
+          <div class="card glass-card stat-small-card h-100 p-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <div class="text-secondary small fw-medium">Active Faculty</div>
+                <div class="fw-bold mt-1" style="font-size: 2rem;" id="stat-total-staff">0</div>
+              </div>
+              <div class="rounded-3 p-2 text-info" style="background: rgba(13, 148, 136, 0.12); color: #0d9488 !important; font-size: 1.75rem;">
+                <i class="bi bi-person-workspace"></i>
+              </div>
+            </div>
+            <div class="mt-2 pt-2 border-top border-secondary border-opacity-10">
+              <small class="text-secondary" id="stat-staff-sub">Across departments</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Departments -->
+        <div class="col-6 col-xl-3">
+          <div class="card glass-card stat-small-card h-100 p-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <div class="text-secondary small fw-medium">Departments</div>
+                <div class="fw-bold mt-1" style="font-size: 2rem;" id="stat-departments-count">4</div>
+              </div>
+              <div class="rounded-3 p-2 text-success" style="background: rgba(16, 185, 129, 0.12); font-size: 1.75rem;">
+                <i class="bi bi-building"></i>
+              </div>
+            </div>
+            <div class="mt-2 pt-2 border-top border-secondary border-opacity-10">
+              <small class="text-secondary" id="stat-depts-sub">Engineering & IT</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Avg -->
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="card glass-card stat-small-card h-100 p-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <div class="text-secondary small fw-medium">College Attendance</div>
+                <div class="fw-bold mt-1" style="font-size: 2rem;" id="stat-attendance-avg">0%</div>
+              </div>
+              <div class="rounded-3 p-2 text-warning" style="background: rgba(245, 158, 11, 0.12); font-size: 1.75rem;">
+                <i class="bi bi-calendar-check"></i>
+              </div>
+            </div>
+            <div class="mt-2 pt-2 border-top border-secondary border-opacity-10">
+              <small class="text-secondary" id="stat-attendance-sub">Daily Average</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === MAIN GRID === -->
+      <div class="row g-4 mb-4">
+        <!-- Department Distribution Chart -->
+        <div class="col-12 col-lg-8">
+          <div class="card glass-card chart-card h-100 p-4">
+            <h6 class="fw-semibold mb-1">Student Distribution</h6>
+            <p class="text-secondary mb-3" style="font-size: 0.75rem;">Total student enrollment by department</p>
+            <div style="position:relative; height:260px;">
+              <canvas id="departmentChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activities Timeline -->
+        <div class="col-12 col-lg-4">
+          <div class="card glass-card h-100 p-4">
+            <h6 class="fw-semibold mb-3">System Activities</h6>
+            <ul class="timeline" id="dashboard-timeline">
+              <!-- Rendered dynamically -->
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core Scripts -->
+<script src="../js/app.js"></script>
+
+<script>
+  let deptChartObj = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Wait for seeding to finish (initial load)
+    setTimeout(() => {
+      loadDashboardData();
+    }, 100);
+  });
+
+  function loadDashboardData() {
+    const students = JSON.parse(localStorage.getItem('cms_students') || '[]');
+    const staff = JSON.parse(localStorage.getItem('cms_staff') || '[]');
+    const branding = JSON.parse(localStorage.getItem('cms_branding') || '{}');
+    const session = JSON.parse(sessionStorage.getItem('cms_session') || localStorage.getItem('cms_session') || '{}');
+
+    // Date
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('hero-date').textContent = new Date().toLocaleDateString('en-US', options);
+    
+    // User greeting
+    if (session.username) {
+      document.getElementById('hero-username').textContent = session.username;
+    }
+    if (branding.tagline) {
+      document.getElementById('hero-tagline').textContent = branding.tagline + ' Here\'s your college oversight at a glance.';
+    }
+
+    // Populate counts
+    document.getElementById('stat-total-students').textContent = students.length;
+    document.getElementById('stat-total-staff').textContent = staff.length;
+    
+    // Departments count
+    const depts = [...new Set(students.map(s => s.department))];
+    document.getElementById('stat-departments-count').textContent = depts.length || 4;
+
+    // Calculate Average Attendance
+    if (students.length > 0) {
+      const sum = students.reduce((acc, s) => acc + (s.attendancePercent || 0), 0);
+      const avg = (sum / students.length).toFixed(1);
+      document.getElementById('stat-attendance-avg').textContent = `${avg}%`;
+    } else {
+      document.getElementById('stat-attendance-avg').textContent = '0%';
+    }
+
+    // Render department distribution chart
+    renderDeptChart(students, depts);
+
+    // Render timeline logs
+    renderActivitiesTimeline();
+  }
+
+  function renderDeptChart(students, depts) {
+    const ctx = document.getElementById('departmentChart').getContext('2d');
+    if (deptChartObj) deptChartObj.destroy();
+    
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const textColor = isDark ? '#9ca3af' : '#64748b';
+    const gridColor = isDark ? '#1f2937' : '#e2e8f0';
+
+    const defaultDepts = ["Computer Science", "Electronics & Communication", "Information Technology", "Mechanical Engineering"];
+    const activeDepts = depts.length > 0 ? depts : defaultDepts;
+
+    const colors = ['#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+    const counts = activeDepts.map(d => students.filter(s => s.department === d).length);
+    const shortLabels = activeDepts.map(d => d.length > 18 ? d.split(' ').map(w=>w[0]).join('') : d);
+
+    deptChartObj = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: shortLabels,
+        datasets: [{
+          label: 'Students Count',
+          data: counts,
+          backgroundColor: activeDepts.map((_, i) => colors[i % colors.length]),
+          borderRadius: 6,
+          barThickness: 28
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: textColor, font: { family: 'Poppins', size: 11 }, precision: 0 },
+            grid: { color: gridColor }
+          },
+          x: {
+            ticks: { color: textColor, font: { family: 'Poppins', size: 10 } },
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => ` Enrolled: ${context.parsed.y} students`
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function renderActivitiesTimeline() {
+    const tl = document.getElementById('dashboard-timeline');
+    if (!tl) return;
+
+    const logs = JSON.parse(localStorage.getItem('cms_activity_log') || '[]').slice(0, 5);
+    tl.innerHTML = '';
+
+    if (logs.length === 0) {
+      tl.innerHTML = `<li class="text-secondary small text-center py-3">No activity logs recorded.</li>`;
+      return;
+    }
+
+    logs.forEach(log => {
+      const li = document.createElement('li');
+      li.className = 'timeline-item';
+      li.innerHTML = `
+        <span class="timeline-marker ${log.type || 'info'}"></span>
+        <div class="timeline-content">
+          <div class="fw-semibold text-capitalize" style="font-size:0.8rem;">${log.action.toLowerCase()}</div>
+          <div class="text-secondary" style="font-size:0.75rem;">${log.details}</div>
+          <div class="timeline-time">${formatTimeAgo(log.timestamp)}</div>
+        </div>
+      `;
+      tl.appendChild(li);
+    });
+  }
+
+  // Hook into theme toggling to update chart theme
+  const origToggleTheme = window.toggleTheme;
+  window.toggleTheme = function() {
+    origToggleTheme && origToggleTheme();
+    setTimeout(loadDashboardData, 150);
+  };
+</script>
+</body>
+</html>

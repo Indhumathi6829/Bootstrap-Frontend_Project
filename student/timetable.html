@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Timetable - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .period-cell {
+      min-width: 130px;
+      border-radius: 0.6rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: none;
+    }
+    .period-math { background: rgba(79,70,229,0.1); color: #4f46e5; }
+    .period-prog { background: rgba(16,185,129,0.1); color: #059669; }
+    .period-db   { background: rgba(245,158,11,0.1); color: #d97706; }
+    .period-os   { background: rgba(239,68,68,0.1); color: #dc2626; }
+    .period-cn   { background: rgba(6,182,212,0.1); color: #0891b2; }
+    .period-lab  { background: rgba(139,92,246,0.1); color: #7c3aed; }
+    .period-break { background: rgba(156,163,175,0.1); color: #6b7280; font-style: italic; font-weight: 400; }
+    .period-free  { background: transparent; color: var(--text-secondary); font-style: italic; font-weight: 400; }
+    .day-header { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td.today-col { background: rgba(79,70,229,0.04); }
+    @media print {
+      #sidebar, .top-navbar, .no-print, .toast-container, #sidebar-backdrop { display: none !important; }
+      #app-container, #main-content { display: block !important; width: 100% !important; padding: 0 !important; }
+      .glass-card, .card { box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Header -->
+      <div class="card glass-card p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+          <div>
+            <h4 class="fw-bold mb-1"><i class="bi bi-calendar3 me-2"></i>Weekly Class Timetable</h4>
+            <p class="text-secondary mb-0 small" id="timetable-sub">Your scheduled classes for this semester.</p>
+          </div>
+          <button onclick="window.print()" class="btn btn-outline-primary no-print d-flex align-items-center gap-2">
+            <i class="bi bi-printer"></i> Print Timetable
+          </button>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="d-flex flex-wrap gap-2 mb-4 no-print">
+        <span class="period-cell period-math">Mathematics</span>
+        <span class="period-cell period-prog">Programming</span>
+        <span class="period-cell period-db">Database</span>
+        <span class="period-cell period-os">Operating Systems</span>
+        <span class="period-cell period-cn">Comp. Networks</span>
+        <span class="period-cell period-lab">Lab / Practical</span>
+        <span class="period-cell period-break">Break</span>
+      </div>
+
+      <!-- Timetable Grid -->
+      <div class="card glass-card p-4">
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle text-center mb-0" id="timetable">
+            <thead>
+              <tr>
+                <th class="text-secondary" style="min-width: 100px;">Time</th>
+                <th class="day-header" id="th-mon">Monday</th>
+                <th class="day-header" id="th-tue">Tuesday</th>
+                <th class="day-header" id="th-wed">Wednesday</th>
+                <th class="day-header" id="th-thu">Thursday</th>
+                <th class="day-header" id="th-fri">Friday</th>
+              </tr>
+            </thead>
+            <tbody id="timetable-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+
+<script>
+  // Static schedule data – same for all students in a class
+  const PERIODS = [
+    { time: '08:00 – 09:00', slots: ['Mathematics', 'Programming', 'Mathematics', 'Database', 'Programming'], types: ['math', 'prog', 'math', 'db', 'prog'] },
+    { time: '09:00 – 10:00', slots: ['Programming', 'Mathematics', 'Database', 'Operating Systems', 'Mathematics'], types: ['prog', 'math', 'db', 'os', 'math'] },
+    { time: '10:00 – 10:15', slots: ['Break', 'Break', 'Break', 'Break', 'Break'], types: ['break', 'break', 'break', 'break', 'break'] },
+    { time: '10:15 – 11:15', slots: ['Database', 'Operating Systems', 'Programming', 'Comp. Networks', 'Database'], types: ['db', 'os', 'prog', 'cn', 'db'] },
+    { time: '11:15 – 12:15', slots: ['Operating Systems', 'Database', 'Comp. Networks', 'Mathematics', 'Operating Systems'], types: ['os', 'db', 'cn', 'math', 'os'] },
+    { time: '12:15 – 13:00', slots: ['Lunch Break', 'Lunch Break', 'Lunch Break', 'Lunch Break', 'Lunch Break'], types: ['break', 'break', 'break', 'break', 'break'] },
+    { time: '13:00 – 14:00', slots: ['Comp. Networks', 'Comp. Networks', 'Lab (Programming)', 'Lab (Programming)', 'Free'], types: ['cn', 'cn', 'lab', 'lab', 'free'] },
+    { time: '14:00 – 15:00', slots: ['Lab (Database)', 'Free', 'Lab (Database)', 'Free', 'Free'], types: ['lab', 'free', 'lab', 'free', 'free'] },
+    { time: '15:00 – 16:00', slots: ['Tutorial', 'Tutorial', 'Tutorial', 'Tutorial', 'Free'], types: ['prog', 'math', 'os', 'db', 'free'] },
+  ];
+
+  const dayIndices = { 0: null, 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: null }; // Sun/Sat = no class
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(buildTimetable, 100);
+  });
+
+  function buildTimetable() {
+    const session = getSession();
+    if (session) {
+      const s = getStudentById(session.linkedId);
+      if (s) {
+        document.getElementById('timetable-sub').textContent = `${s.department} · ${s.year} · Section ${s.section || 'A'}`;
+      }
+    }
+
+    // Highlight today's column
+    const today = new Date().getDay(); // 0=Sun, 1=Mon ... 6=Sat
+    const colIdx = dayIndices[today];
+    const headers = ['th-mon', 'th-tue', 'th-wed', 'th-thu', 'th-fri'];
+    if (colIdx !== null) {
+      const el = document.getElementById(headers[colIdx]);
+      if (el) {
+        el.innerHTML += ' <span class="badge bg-primary ms-1" style="font-size:0.65rem;">TODAY</span>';
+      }
+    }
+
+    const tbody = document.getElementById('timetable-body');
+    tbody.innerHTML = '';
+
+    PERIODS.forEach(period => {
+      const tr = document.createElement('tr');
+      let html = `<td class="text-secondary small fw-medium">${period.time}</td>`;
+      period.slots.forEach((slot, idx) => {
+        const isToday = idx === colIdx ? ' today-col' : '';
+        html += `<td class="${isToday}"><span class="period-cell period-${period.types[idx]} d-inline-block w-100">${slot}</span></td>`;
+      });
+      tr.innerHTML = html;
+      tbody.appendChild(tr);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Apex College Faculty</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .settings-section { border-left: 3px solid var(--secondary-color); padding-left: 1rem; margin-bottom: 2rem; }
+    .settings-section h6 { font-size: .95rem; font-weight: 600; }
+    .settings-section p { font-size: .8rem; color: var(--text-secondary); }
+    .swatch-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .swatch-btn { width: 32px; height: 32px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: transform .15s; }
+    .swatch-btn:hover { transform: scale(1.15); }
+    .swatch-btn.active { border-color: var(--text-primary) !important; }
+  </style>
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <div class="row g-4 justify-content-center">
+        <div class="col-12 col-lg-8">
+
+          <!-- Change Password -->
+          <div class="card glass-card p-4 mb-4">
+            <div class="settings-section">
+              <h6>Change Portal Password</h6>
+              <p>Update your portal login password. You'll be logged out after saving.</p>
+            </div>
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label small fw-medium">Current Password</label>
+                <input type="password" id="old-password" class="form-control" placeholder="Your current password">
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-medium">New Password</label>
+                <input type="password" id="new-password" class="form-control" placeholder="Min 6 characters">
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-medium">Confirm New Password</label>
+                <input type="password" id="confirm-password" class="form-control" placeholder="Repeat new password">
+              </div>
+              <div class="col-12">
+                <button onclick="changePassword()" class="btn btn-primary">Update Password</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accent Color -->
+          <div class="card glass-card p-4 mb-4">
+            <div class="settings-section">
+              <h6>Accent Colour</h6>
+              <p>Choose a primary colour for your portal interface.</p>
+            </div>
+            <div class="swatch-row mb-3" id="swatch-row">
+              <button class="swatch-btn" data-color="#4f46e5" style="background:#4f46e5" title="Indigo"></button>
+              <button class="swatch-btn" data-color="#0d9488" style="background:#0d9488" title="Teal"></button>
+              <button class="swatch-btn" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
+              <button class="swatch-btn" data-color="#10b981" style="background:#10b981" title="Emerald"></button>
+              <button class="swatch-btn" data-color="#f59e0b" style="background:#f59e0b" title="Amber"></button>
+              <button class="swatch-btn" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+              <button class="swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6" title="Purple"></button>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <label class="form-label small fw-medium mb-0">Custom colour:</label>
+              <input type="color" id="custom-color-picker" class="form-control form-control-color" style="width:48px; height:36px;">
+            </div>
+            <button onclick="saveAccent()" class="btn btn-primary mt-3">Apply Colour</button>
+          </div>
+
+          <!-- Theme Toggle -->
+          <div class="card glass-card p-4 mb-4">
+            <div class="settings-section">
+              <h6>Appearance Theme</h6>
+              <p>Switch between light and dark modes for the portal.</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="fw-medium small">Theme:</span>
+              <button id="theme-toggle-btn" class="btn btn-outline-secondary d-flex align-items-center gap-2" onclick="toggleTheme(); updateLabel();">
+                <i class="bi bi-moon-stars-fill" id="theme-btn-icon"></i>
+                <span id="theme-btn-label">Dark Mode</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  let selectedColor = '#4f46e5';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const branding = getBranding();
+    selectedColor = branding.accentColor || '#4f46e5';
+    document.getElementById('custom-color-picker').value = selectedColor;
+    setActiveSwatch(selectedColor);
+    setupSwatches();
+    updateLabel();
+  });
+
+  function setupSwatches() {
+    document.querySelectorAll('.swatch-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedColor = btn.getAttribute('data-color');
+        document.getElementById('custom-color-picker').value = selectedColor;
+        setActiveSwatch(selectedColor);
+        document.documentElement.style.setProperty('--primary-color', selectedColor);
+      });
+    });
+    document.getElementById('custom-color-picker').addEventListener('input', e => {
+      selectedColor = e.target.value;
+      setActiveSwatch(selectedColor);
+      document.documentElement.style.setProperty('--primary-color', selectedColor);
+    });
+  }
+
+  function setActiveSwatch(color) {
+    document.querySelectorAll('.swatch-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-color').toLowerCase() === color.toLowerCase());
+    });
+  }
+
+  function saveAccent() {
+    const branding = getBranding();
+    branding.accentColor = selectedColor;
+    localStorage.setItem('cms_branding', JSON.stringify(branding));
+    showToast("Accent colour saved!", "success");
+    setTimeout(() => location.reload(), 800);
+  }
+
+  function updateLabel() {
+    const theme = localStorage.getItem('cms_theme') || 'light';
+    document.getElementById('theme-btn-label').textContent = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    document.getElementById('theme-btn-icon').className = theme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill text-primary';
+  }
+
+  function changePassword() {
+    const session = getSession();
+    if (!session) return;
+
+    const oldPwd = document.getElementById('old-password').value;
+    const newPwd = document.getElementById('new-password').value;
+    const confirmPwd = document.getElementById('confirm-password').value;
+
+    if (!oldPwd || !newPwd || !confirmPwd) {
+      showToast("Please fill in all password fields.", "warning");
+      return;
+    }
+    if (newPwd.length < 6) {
+      showToast("New password must be at least 6 characters.", "warning");
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      showToast("New passwords do not match.", "danger");
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('cms_users') || '[]');
+    const userIdx = users.findIndex(u => u.username === session.username);
+
+    if (userIdx === -1) {
+      showToast("User account not found.", "danger");
+      return;
+    }
+    if (users[userIdx].password !== oldPwd) {
+      showToast("Current password is incorrect.", "danger");
+      return;
+    }
+
+    users[userIdx].password = newPwd;
+    localStorage.setItem('cms_users', JSON.stringify(users));
+    showToast("Password changed! Logging you out...", "success");
+    setTimeout(() => logout(), 1500);
+  }
+</script>
+</body>
+</html>

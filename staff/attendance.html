@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Attendance - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Control Bar -->
+      <div class="card glass-card p-4 mb-4">
+        <h4 class="fw-bold mb-1">Mark Attendance</h4>
+        <p class="text-secondary mb-4" id="staff-class-label">Select a date to record roll call for your assigned class.</p>
+
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-md-4">
+            <label for="attendance-date" class="form-label small fw-medium text-secondary">Attendance Date</label>
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-calendar3 text-secondary"></i></span>
+              <input type="date" id="attendance-date" class="form-control border-start-0" onchange="loadAttendanceList()">
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card p-3 glass-card text-center">
+              <span class="text-secondary small">Present Today</span>
+              <h4 class="fw-bold mb-0 text-success" id="present-count">0 / 0</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Table -->
+      <div class="card glass-card p-4">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Overall %</th>
+                <th class="text-center" style="width: 260px;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-table-body"></tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top border-secondary border-opacity-10">
+          <button onclick="setAllAttendance('Present')" class="btn btn-outline-success">Mark All Present</button>
+          <button onclick="setAllAttendance('Absent')" class="btn btn-outline-danger">Mark All Absent</button>
+          <button onclick="saveAttendanceSheet()" class="btn btn-primary px-5">Save Roll Call</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  let matchedStudents = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('attendance-date').value = today;
+    setTimeout(() => {
+      loadAttendanceList();
+    }, 100);
+  });
+
+  function loadAttendanceList() {
+    const session = getSession();
+    if (!session) return;
+
+    const staffRecord = getStaffById(session.linkedId);
+    const allStudents = getAllStudents();
+
+    if (staffRecord && staffRecord.assignedClass) {
+      const yearPart = staffRecord.assignedClass.split(' - ')[0];
+      const sectionPart = staffRecord.assignedClass.split(' - ')[1];
+      matchedStudents = allStudents.filter(s => s.year === yearPart && (s.section === sectionPart || !s.section));
+      document.getElementById('staff-class-label').textContent = `Class: ${staffRecord.assignedClass} · ${matchedStudents.length} students`;
+    } else {
+      matchedStudents = allStudents;
+    }
+
+    const dateVal = document.getElementById('attendance-date').value;
+    if (!dateVal) return;
+
+    const attendanceData = getAttendanceData();
+    const tbody = document.getElementById('attendance-table-body');
+    tbody.innerHTML = '';
+
+    if (matchedStudents.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-secondary">No students in your assigned class.</td></tr>`;
+      return;
+    }
+
+    let presentCount = 0;
+    matchedStudents.forEach(s => {
+      let status = (attendanceData[s.id] && attendanceData[s.id][dateVal]) || 'Present';
+      if (status === 'Present') presentCount++;
+
+      const attClass = s.attendancePercent < 75 ? 'text-danger' : 'text-success';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="small fw-medium">${s.id}</td>
+        <td class="small text-secondary fw-semibold">${s.rollNumber}</td>
+        <td><div class="fw-semibold">${s.name}</div></td>
+        <td><strong class="${attClass}">${s.attendancePercent}%</strong></td>
+        <td>
+          <div class="d-flex justify-content-center gap-2">
+            <input type="radio" class="btn-check" name="status-${s.id}" id="present-${s.id}" value="Present" ${status === 'Present' ? 'checked' : ''} onchange="updateCount()">
+            <label class="btn btn-sm btn-outline-success px-3" for="present-${s.id}"><i class="bi bi-check-circle me-1"></i>Present</label>
+            <input type="radio" class="btn-check" name="status-${s.id}" id="absent-${s.id}" value="Absent" ${status === 'Absent' ? 'checked' : ''} onchange="updateCount()">
+            <label class="btn btn-sm btn-outline-danger px-3" for="absent-${s.id}"><i class="bi bi-x-circle me-1"></i>Absent</label>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('present-count').textContent = `${presentCount} / ${matchedStudents.length}`;
+  }
+
+  function updateCount() {
+    const presentChecked = document.querySelectorAll('input[value="Present"]:checked').length;
+    document.getElementById('present-count').textContent = `${presentChecked} / ${matchedStudents.length}`;
+  }
+
+  function setAllAttendance(status) {
+    matchedStudents.forEach(s => {
+      const radio = document.getElementById(`${status === 'Present' ? 'present' : 'absent'}-${s.id}`);
+      if (radio) radio.checked = true;
+    });
+    updateCount();
+  }
+
+  function saveAttendanceSheet() {
+    const dateVal = document.getElementById('attendance-date').value;
+    if (!dateVal || matchedStudents.length === 0) {
+      showToast("Please select a valid date with students.", "warning");
+      return;
+    }
+
+    const attendanceData = getAttendanceData();
+    matchedStudents.forEach(s => {
+      const presentRadio = document.getElementById(`present-${s.id}`);
+      const status = (presentRadio && presentRadio.checked) ? 'Present' : 'Absent';
+      if (!attendanceData[s.id]) attendanceData[s.id] = {};
+      attendanceData[s.id][dateVal] = status;
+    });
+
+    saveAttendanceData(attendanceData);
+    updateAllStudentsAttendancePercentage();
+    logActivity('ATTENDANCE SAVED', `Roll call for ${matchedStudents.length} students submitted for ${dateVal}.`, 'info');
+    showToast("Attendance saved successfully!", "success");
+    loadAttendanceList();
+  }
+</script>
+</body>
+</html>

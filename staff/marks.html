@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Marks - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .math-card { border-left: 4px solid var(--primary-color); }
+    .prog-card { border-left: 4px solid var(--secondary-color); }
+    .db-card   { border-left: 4px solid var(--success-color); }
+    .os-card   { border-left: 4px solid var(--warning-color); }
+    .cn-card   { border-left: 4px solid var(--info-color); }
+  </style>
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Student Selector -->
+      <div class="card glass-card p-4 mb-4">
+        <h4 class="fw-bold mb-1">Enter Student Marks</h4>
+        <p class="text-secondary mb-3">Select a student from your class to enter or update examination scores.</p>
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label for="student-selector" class="form-label small fw-medium text-secondary">Select Student</label>
+            <select id="student-selector" class="form-select" onchange="onStudentSelected()">
+              <option value="">-- Choose a Student --</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6 d-flex align-items-end">
+            <div id="student-quick-info" class="text-secondary small d-none pb-2">
+              Dept: <strong class="text-dark-theme-override" id="info-dept">—</strong> · Class: <strong class="text-dark-theme-override" id="info-class">—</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Marks Entry Panel -->
+      <div class="row g-4" id="marks-panel">
+        <div class="col-12 col-lg-7">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-semibold mb-3 border-bottom pb-2">Subject Marks (0 – 100)</h5>
+            <form id="marks-form" onsubmit="handleMarksSubmit(event)" novalidate>
+              <div class="card mb-3 p-3 math-card shadow-sm"><div class="row align-items-center">
+                <div class="col-sm-6"><label for="mark-mathematics" class="form-label fw-semibold mb-0">Mathematics</label><small class="text-secondary d-block" style="font-size:0.75rem;">Calculus, algebra, structures</small></div>
+                <div class="col-sm-6"><input type="number" id="mark-mathematics" class="form-control" placeholder="0" min="0" max="100" oninput="calculateRealtimeTotals()" disabled></div>
+              </div></div>
+              <div class="card mb-3 p-3 prog-card shadow-sm"><div class="row align-items-center">
+                <div class="col-sm-6"><label for="mark-programming" class="form-label fw-semibold mb-0">Programming</label><small class="text-secondary d-block" style="font-size:0.75rem;">OOP, algorithms, code logic</small></div>
+                <div class="col-sm-6"><input type="number" id="mark-programming" class="form-control" placeholder="0" min="0" max="100" oninput="calculateRealtimeTotals()" disabled></div>
+              </div></div>
+              <div class="card mb-3 p-3 db-card shadow-sm"><div class="row align-items-center">
+                <div class="col-sm-6"><label for="mark-database" class="form-label fw-semibold mb-0">Database Systems</label><small class="text-secondary d-block" style="font-size:0.75rem;">SQL, schema design, indexing</small></div>
+                <div class="col-sm-6"><input type="number" id="mark-database" class="form-control" placeholder="0" min="0" max="100" oninput="calculateRealtimeTotals()" disabled></div>
+              </div></div>
+              <div class="card mb-3 p-3 os-card shadow-sm"><div class="row align-items-center">
+                <div class="col-sm-6"><label for="mark-operatingSystems" class="form-label fw-semibold mb-0">Operating Systems</label><small class="text-secondary d-block" style="font-size:0.75rem;">Processes, memory, scheduling</small></div>
+                <div class="col-sm-6"><input type="number" id="mark-operatingSystems" class="form-control" placeholder="0" min="0" max="100" oninput="calculateRealtimeTotals()" disabled></div>
+              </div></div>
+              <div class="card mb-3 p-3 cn-card shadow-sm"><div class="row align-items-center">
+                <div class="col-sm-6"><label for="mark-computerNetworks" class="form-label fw-semibold mb-0">Computer Networks</label><small class="text-secondary d-block" style="font-size:0.75rem;">TCP/IP, routing, protocols</small></div>
+                <div class="col-sm-6"><input type="number" id="mark-computerNetworks" class="form-control" placeholder="0" min="0" max="100" oninput="calculateRealtimeTotals()" disabled></div>
+              </div></div>
+              <div class="d-grid mt-4">
+                <button type="submit" id="save-marks-btn" class="btn btn-primary py-2" disabled>Save Marks</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Score Summary -->
+        <div class="col-12 col-lg-5">
+          <div class="card glass-card p-4 h-100 text-center d-flex flex-column justify-content-between">
+            <h5 class="fw-semibold text-start mb-4 border-bottom pb-2">Performance Analytics</h5>
+            <div class="my-auto py-3">
+              <div class="row mb-4">
+                <div class="col-6 border-end border-secondary border-opacity-10">
+                  <span class="text-secondary small fw-medium d-block">TOTAL SCORES</span>
+                  <h2 class="fw-bold mt-1 mb-0" id="calc-total">0 / 500</h2>
+                </div>
+                <div class="col-6">
+                  <span class="text-secondary small fw-medium d-block">PERCENTAGE</span>
+                  <h2 class="fw-bold mt-1 mb-0" id="calc-percent">0.00%</h2>
+                </div>
+              </div>
+              <hr class="border-secondary border-opacity-10 my-4">
+              <div class="row mb-3">
+                <div class="col-6 border-end border-secondary border-opacity-10">
+                  <span class="text-secondary small fw-medium d-block">CGPA ESTIMATE</span>
+                  <h1 class="fw-bold mt-2 mb-0" style="color: var(--secondary-color);" id="calc-cgpa">0.00</h1>
+                  <small class="text-secondary" style="font-size: 0.7rem;">Out of 10.00</small>
+                </div>
+                <div class="col-6 d-flex flex-column align-items-center justify-content-center">
+                  <span class="text-secondary small fw-medium d-block">OVERALL GRADE</span>
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-white mt-2" style="width: 70px; height: 70px; font-size: 1.75rem; font-weight: 700; background-color: var(--danger-color);" id="calc-grade">F</div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-light p-3 rounded-3 text-secondary text-start" style="font-size: 0.75rem;">
+              <h6 class="fw-semibold text-dark-theme-override mb-1"><i class="bi bi-info-circle-fill me-1"></i>Grading Scale</h6>
+              A+ (90-100) | A (80-89) | B (70-79) | C (60-69) | D (50-59) | F (under 50)
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  let activeStudentId = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(populateStudentDropdown, 100);
+  });
+
+  function populateStudentDropdown() {
+    const session = getSession();
+    if (!session) return;
+
+    const allStudents = getAllStudents();
+    const staffRecord = getStaffById(session.linkedId);
+    let students = allStudents;
+
+    if (staffRecord && staffRecord.assignedClass) {
+      const yearPart = staffRecord.assignedClass.split(' - ')[0];
+      const sectionPart = staffRecord.assignedClass.split(' - ')[1];
+      students = allStudents.filter(s => s.year === yearPart && (s.section === sectionPart || !s.section));
+    }
+
+    students.sort((a, b) => a.name.localeCompare(b.name));
+    const select = document.getElementById('student-selector');
+    students.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = `${s.name} (${s.id})`;
+      select.appendChild(opt);
+    });
+  }
+
+  function onStudentSelected() {
+    activeStudentId = document.getElementById('student-selector').value;
+    const inputs = ['mark-mathematics', 'mark-programming', 'mark-database', 'mark-operatingSystems', 'mark-computerNetworks'];
+    const saveBtn = document.getElementById('save-marks-btn');
+
+    if (!activeStudentId) {
+      inputs.forEach(id => { document.getElementById(id).value = ''; document.getElementById(id).disabled = true; });
+      saveBtn.disabled = true;
+      document.getElementById('student-quick-info').classList.add('d-none');
+      resetCalc();
+      return;
+    }
+
+    const student = getStudentById(activeStudentId);
+    if (student) {
+      document.getElementById('info-dept').textContent = student.department;
+      document.getElementById('info-class').textContent = `${student.year} · Sec ${student.section || 'A'}`;
+      document.getElementById('student-quick-info').classList.remove('d-none');
+    }
+
+    const marks = getMarksData()[activeStudentId] || {};
+    inputs.forEach(id => {
+      const key = id.replace('mark-', '');
+      document.getElementById(id).value = marks[key] || 0;
+      document.getElementById(id).disabled = false;
+    });
+    saveBtn.disabled = false;
+    calculateRealtimeTotals();
+  }
+
+  function calculateRealtimeTotals() {
+    const vals = ['mark-mathematics', 'mark-programming', 'mark-database', 'mark-operatingSystems', 'mark-computerNetworks']
+      .map(id => parseInt(document.getElementById(id).value) || 0);
+    const total = vals.reduce((a, b) => a + b, 0);
+    const pct = total / 5;
+    const cgpa = (pct / 10).toFixed(2);
+    const grade = getGradeFromPercentage(pct);
+
+    document.getElementById('calc-total').textContent = `${total} / 500`;
+    document.getElementById('calc-percent').textContent = `${pct.toFixed(2)}%`;
+    document.getElementById('calc-cgpa').textContent = cgpa;
+    const badge = document.getElementById('calc-grade');
+    badge.textContent = grade;
+    badge.style.backgroundColor = grade === 'F' ? 'var(--danger-color)' : grade <= 'D' ? 'var(--warning-color)' : grade === 'B' ? 'var(--info-color)' : 'var(--success-color)';
+  }
+
+  function resetCalc() {
+    document.getElementById('calc-total').textContent = '0 / 500';
+    document.getElementById('calc-percent').textContent = '0.00%';
+    document.getElementById('calc-cgpa').textContent = '0.00';
+    document.getElementById('calc-grade').textContent = 'F';
+    document.getElementById('calc-grade').style.backgroundColor = 'var(--danger-color)';
+  }
+
+  function handleMarksSubmit(e) {
+    e.preventDefault();
+    if (!activeStudentId) return;
+
+    const marksData = getMarksData();
+    marksData[activeStudentId] = {
+      mathematics: parseInt(document.getElementById('mark-mathematics').value) || 0,
+      programming: parseInt(document.getElementById('mark-programming').value) || 0,
+      database: parseInt(document.getElementById('mark-database').value) || 0,
+      operatingSystems: parseInt(document.getElementById('mark-operatingSystems').value) || 0,
+      computerNetworks: parseInt(document.getElementById('mark-computerNetworks').value) || 0
+    };
+    saveMarksData(marksData);
+    recalculateCGPA(activeStudentId);
+    logActivity('MARKS ENTERED', `Staff updated marks for student ${activeStudentId}.`, 'info');
+    showToast("Marks saved and CGPA updated successfully!", "success");
+  }
+</script>
+</body>
+</html>

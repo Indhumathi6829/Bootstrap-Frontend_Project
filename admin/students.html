@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Students Directory - Apex College</title>
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <!-- Dynamic Header & Sidebar injected by app.js -->
+
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Header Card -->
+      <div class="card glass-card p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+          <div>
+            <h4 class="fw-bold mb-1">Student Directory</h4>
+            <p class="text-secondary mb-0 small">Search, filter, sort and manage student records.</p>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button onclick="exportToCSV()" class="btn btn-outline-primary d-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-arrow-down"></i> Export CSV
+            </button>
+            <button onclick="triggerCSVImport()" class="btn btn-outline-primary d-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-arrow-up"></i> Import CSV
+            </button>
+            <input type="file" id="csv-file-input" class="d-none" accept=".csv" onchange="handleCSVFileImport(event)">
+            <a href="add-student.html" class="btn btn-primary d-flex align-items-center gap-2">
+              <i class="bi bi-person-plus"></i> Enroll Student
+            </a>
+          </div>
+        </div>
+
+        <!-- Search + Filters row -->
+        <div class="row g-3">
+          <div class="col-12 col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent text-secondary border-end-0"><i class="bi bi-search"></i></span>
+              <input type="text" id="search-input" class="form-control border-start-0" placeholder="Search name, ID, roll no…" oninput="onFilterChanged()">
+            </div>
+          </div>
+          <div class="col-6 col-md-2">
+            <select id="filter-department" class="form-select" onchange="onFilterChanged()">
+              <option value="">All Departments</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Electronics & Communication">Electronics & Communication</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select id="filter-year" class="form-select" onchange="onFilterChanged()">
+              <option value="">All Years</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select id="filter-gender" class="form-select" onchange="onFilterChanged()">
+              <option value="">All Genders</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select id="sort-select" class="form-select" onchange="onFilterChanged()">
+              <option value="name-asc">Name (A→Z)</option>
+              <option value="name-desc">Name (Z→A)</option>
+              <option value="cgpa-desc">CGPA High→Low</option>
+              <option value="cgpa-asc">CGPA Low→High</option>
+              <option value="id-asc">Student ID</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Active filter chips -->
+        <div class="filter-chips-container" id="filter-chips-container"></div>
+      </div>
+
+      <!-- Bulk Actions Bar -->
+      <div id="bulk-actions-bar">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-check2-square fs-5"></i>
+          <span id="bulk-selected-count" class="fw-semibold">0</span> student(s) selected
+        </div>
+        <div class="d-flex gap-2">
+          <button onclick="bulkExportSelected()" class="btn btn-light btn-sm d-flex align-items-center gap-1">
+            <i class="bi bi-download"></i> Export Selected
+          </button>
+          <button onclick="promptBulkDelete()" class="btn btn-danger btn-sm d-flex align-items-center gap-1">
+            <i class="bi bi-trash"></i> Delete Selected
+          </button>
+          <button onclick="clearSelection()" class="btn btn-outline-light btn-sm">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="card glass-card p-4">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th style="width:42px;">
+                  <input type="checkbox" id="select-all-checkbox" class="form-check-input" onclick="toggleSelectAll(this)">
+                </th>
+                <th style="width:100px;">ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Class</th>
+                <th>Attendance</th>
+                <th>CGPA</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-table-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mt-4 pt-3 border-top border-secondary border-opacity-10">
+          <div class="text-secondary small" id="pagination-status">Showing 0 of 0</div>
+          <ul class="pagination pagination-sm mb-0" id="pagination-list"></ul>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Delete Single Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-secondary">
+        Delete <strong id="delete-student-name" class="text-dark"></strong>? This will permanently remove all their records, marks, and attendance.
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button id="confirm-delete-btn" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Delete Modal -->
+<div class="modal fade" id="bulkDeleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Bulk Delete Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-secondary">
+        This will permanently delete <strong id="bulk-delete-count" class="text-danger">0</strong> selected student(s) and all their associated records. This cannot be undone.
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button id="confirm-bulk-delete-btn" class="btn btn-danger">Delete All Selected</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core Scripts -->
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+
+<script>
+  let filteredStudents = [];
+  let currentPage = 1;
+  const pageSize = 10;
+  let selectedIds = new Set();
+  let singleDeleteModal = null, bulkDeleteModal = null;
+  let targetDeleteId = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    singleDeleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    bulkDeleteModal = new bootstrap.Modal(document.getElementById('bulkDeleteModal'));
+    document.getElementById('confirm-delete-btn').addEventListener('click', executeSingleDelete);
+    document.getElementById('confirm-bulk-delete-btn').addEventListener('click', executeBulkDelete);
+    setTimeout(onFilterChanged, 60);
+  });
+
+  // ---- Filter / Search / Sort ----
+  function onFilterChanged() {
+    const q = document.getElementById('search-input').value.toLowerCase().trim();
+    const dept = document.getElementById('filter-department').value;
+    const year = document.getElementById('filter-year').value;
+    const gender = document.getElementById('filter-gender').value;
+    const sort = document.getElementById('sort-select').value;
+
+    filteredStudents = getAllStudents().filter(s => {
+      const matchQ = !q || s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q) ||
+                     s.rollNumber.toLowerCase().includes(q) || s.department.toLowerCase().includes(q);
+      return matchQ &&
+        (!dept || s.department === dept) &&
+        (!year || s.year === year) &&
+        (!gender || s.gender === gender);
+    });
+
+    filteredStudents.sort((a, b) => {
+      if (sort === 'name-asc') return a.name.localeCompare(b.name);
+      if (sort === 'name-desc') return b.name.localeCompare(a.name);
+      if (sort === 'cgpa-desc') return b.cgpa - a.cgpa;
+      if (sort === 'cgpa-asc') return a.cgpa - b.cgpa;
+      if (sort === 'id-asc') return a.id.localeCompare(b.id);
+      return 0;
+    });
+
+    currentPage = 1;
+    selectedIds.clear();
+    renderChips(dept, year, gender, q);
+    renderTable();
+    updateBulkBar();
+  }
+
+  // ---- Filter Chips ----
+  function renderChips(dept, year, gender, query) {
+    const container = document.getElementById('filter-chips-container');
+    container.innerHTML = '';
+    const chips = [];
+    if (query) chips.push({ label: `Search: "${query}"`, clear: () => { document.getElementById('search-input').value = ''; onFilterChanged(); } });
+    if (dept)  chips.push({ label: `Dept: ${dept}`,  clear: () => { document.getElementById('filter-department').value = ''; onFilterChanged(); } });
+    if (year)  chips.push({ label: `Year: ${year}`,  clear: () => { document.getElementById('filter-year').value = ''; onFilterChanged(); } });
+    if (gender)chips.push({ label: `Gender: ${gender}`, clear: () => { document.getElementById('filter-gender').value = ''; onFilterChanged(); } });
+
+    chips.forEach(ch => {
+      const el = document.createElement('span');
+      el.className = 'filter-chip';
+      el.innerHTML = `${ch.label} <button onclick="arguments[0].stopPropagation()" title="Remove filter">×</button>`;
+      el.querySelector('button').addEventListener('click', ch.clear);
+      container.appendChild(el);
+    });
+  }
+
+  // ---- Render Table ----
+  function renderTable() {
+    const tbody = document.getElementById('students-table-body');
+    tbody.innerHTML = '';
+    const total = filteredStudents.length;
+
+    if (total === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5">
+        <i class="bi bi-person-slash d-block fs-1 mb-2 opacity-25"></i>
+        <span class="text-secondary">No students match your search. <a href="add-student.html">Enroll one?</a></span>
+      </td></tr>`;
+      document.getElementById('pagination-status').textContent = 'No records found';
+      document.getElementById('pagination-list').innerHTML = '';
+      return;
+    }
+
+    const totalPages = Math.ceil(total / pageSize);
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * pageSize;
+    const end = Math.min(start + pageSize, total);
+    const page = filteredStudents.slice(start, end);
+
+    page.forEach(s => {
+      const attClass = s.attendancePercent < 75 ? 'badge-absent' : 'badge-present';
+      const isChecked = selectedIds.has(s.id);
+      const tr = document.createElement('tr');
+      if (isChecked) tr.classList.add('table-active');
+      tr.innerHTML = `
+        <td>
+          <input type="checkbox" class="form-check-input row-checkbox" value="${s.id}" ${isChecked ? 'checked' : ''}
+            onchange="onRowCheckChange(this)">
+        </td>
+        <td class="fw-medium small">${s.id}</td>
+        <td>
+          <div class="fw-semibold">${s.name}</div>
+          <small class="text-secondary">${s.gender} · ${s.rollNumber}</small>
+        </td>
+        <td><small>${s.department}</small></td>
+        <td><small>${s.year} · Sem ${s.semester} · Sec ${s.section || 'A'}</small></td>
+        <td><span class="badge ${attClass}">${s.attendancePercent}%</span></td>
+        <td><strong style="color:var(--secondary-color)">${(s.cgpa || 0).toFixed(2)}</strong></td>
+        <td class="text-end">
+          <div class="d-flex justify-content-end gap-1">
+            <a href="profile.html?id=${s.id}" class="btn btn-sm btn-outline-info" title="View Profile"><i class="bi bi-eye"></i></a>
+            <a href="edit-student.html?id=${s.id}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+            <button onclick="promptDeleteStudent('${s.id}','${s.name.replace(/'/g,"\\'")}')" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+          </div>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('pagination-status').textContent = `Showing ${start+1}–${end} of ${total} students`;
+
+    // Render Pagination List
+    const pagList = document.getElementById('pagination-list');
+    pagList.innerHTML = '';
+    
+    // Prev button
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `<button class="page-link" onclick="changePage(${currentPage - 1})">Prev</button>`;
+    pagList.appendChild(prevLi);
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = `page-item ${currentPage === i ? 'active' : ''}`;
+      li.innerHTML = `<button class="page-link" onclick="changePage(${i})">${i}</button>`;
+      pagList.appendChild(li);
+    }
+
+    // Next button
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+    nextLi.innerHTML = `<button class="page-link" onclick="changePage(${currentPage + 1})">Next</button>`;
+    pagList.appendChild(nextLi);
+
+    // Sync select-all state
+    const allCheckbox = document.getElementById('select-all-checkbox');
+    const checkedBoxes = tbody.querySelectorAll('.row-checkbox:checked');
+    const totalRowBoxes = tbody.querySelectorAll('.row-checkbox');
+    allCheckbox.checked = totalRowBoxes.length > 0 && checkedBoxes.length === totalRowBoxes.length;
+  }
+
+  function changePage(page) {
+    if (page < 1 || page > Math.ceil(filteredStudents.length / pageSize)) return;
+    currentPage = page;
+    renderTable();
+  }
+
+  // ---- Checkbox Selection ----
+  function onRowCheckChange(input) {
+    const id = input.value;
+    const tr = input.closest('tr');
+    if (input.checked) {
+      selectedIds.add(id);
+      tr.classList.add('table-active');
+    } else {
+      selectedIds.delete(id);
+      tr.classList.remove('table-active');
+    }
+    syncSelectAllState();
+    updateBulkBar();
+  }
+
+  function toggleSelectAll(allCheckbox) {
+    const rows = document.querySelectorAll('.row-checkbox');
+    rows.forEach(chk => {
+      chk.checked = allCheckbox.checked;
+      const id = chk.value;
+      const tr = chk.closest('tr');
+      if (allCheckbox.checked) {
+        selectedIds.add(id);
+        tr.classList.add('table-active');
+      } else {
+        selectedIds.delete(id);
+        tr.classList.remove('table-active');
+      }
+    });
+    updateBulkBar();
+  }
+
+  function syncSelectAllState() {
+    const allCheckbox = document.getElementById('select-all-checkbox');
+    const checkboxes = document.querySelectorAll('.row-checkbox');
+    const checked = document.querySelectorAll('.row-checkbox:checked');
+    allCheckbox.checked = (checkboxes.length > 0 && checked.length === checkboxes.length);
+  }
+
+  function clearSelection() {
+    selectedIds.clear();
+    const checkboxes = document.querySelectorAll('.row-checkbox, #select-all-checkbox');
+    checkboxes.forEach(c => c.checked = false);
+    const activeRows = document.querySelectorAll('#students-table-body tr.table-active');
+    activeRows.forEach(r => r.classList.remove('table-active'));
+    updateBulkBar();
+  }
+
+  function updateBulkBar() {
+    const bar = document.getElementById('bulk-actions-bar');
+    const countSpan = document.getElementById('bulk-selected-count');
+    if (selectedIds.size > 0) {
+      countSpan.textContent = selectedIds.size;
+      bar.style.display = 'flex';
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+  // ---- CSV Exporter ----
+  function bulkExportSelected() {
+    const list = getAllStudents().filter(s => selectedIds.has(s.id));
+    exportToCSV(list);
+    clearSelection();
+  }
+
+  // ---- CSV Importer ----
+  function triggerCSVImport() {
+    document.getElementById('csv-file-input').click();
+  }
+
+  function handleCSVFileImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const text = e.target.result;
+        const res = importFromCSV(text);
+        showToast(`Successfully enrolled ${res.addedCount} students! (Skipped ${res.skippedCount} duplicates)`, "success");
+        onFilterChanged();
+      } catch (err) {
+        showToast(`Import Error: ${err.message}`, "danger");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // clear
+  }
+
+  // ---- CRUD Deletion Trigger ----
+  function promptDeleteStudent(id, name) {
+    targetDeleteId = id;
+    document.getElementById('delete-student-name').textContent = name;
+    singleDeleteModal.show();
+  }
+
+  function executeSingleDelete() {
+    if (!targetDeleteId) return;
+    try {
+      deleteStudent(targetDeleteId);
+      singleDeleteModal.hide();
+      showToast("Student deleted successfully.", "success");
+      onFilterChanged();
+    } catch(err) {
+      showToast(err.message, "danger");
+    }
+    targetDeleteId = null;
+  }
+
+  function promptBulkDelete() {
+    document.getElementById('bulk-delete-count').textContent = selectedIds.size;
+    bulkDeleteModal.show();
+  }
+
+  function executeBulkDelete() {
+    try {
+      const arr = Array.from(selectedIds);
+      const count = deleteMultipleStudents(arr);
+      bulkDeleteModal.hide();
+      showToast(`Successfully deleted ${count} student records.`, "success");
+      clearSelection();
+      onFilterChanged();
+    } catch(err) {
+      showToast("Error during bulk delete.", "danger");
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Announcements - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .notice-card { border-radius: 1rem; transition: transform 0.2s; }
+    .notice-card:hover { transform: translateY(-2px); }
+    .notice-tag { border-radius: 2rem; padding: 0.2rem 0.7rem; font-size: 0.72rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Header -->
+      <div class="card glass-card p-4 mb-4">
+        <h4 class="fw-bold mb-1"><i class="bi bi-megaphone-fill me-2"></i>Announcements & Notices</h4>
+        <p class="text-secondary mb-3">Read-only notice board showing announcements from administration and faculty.</p>
+
+        <!-- Filter Tabs -->
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="btn btn-primary btn-sm" onclick="filterAnn('All')" id="btn-all">All</button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="filterAnn('Students Only')" id="btn-students">For Students</button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="filterAnn('General')" id="btn-general">General</button>
+        </div>
+      </div>
+
+      <!-- Notices Count -->
+      <p class="text-secondary small mb-3" id="notice-count">Loading...</p>
+
+      <!-- Notices Grid -->
+      <div class="row g-4" id="notices-grid">
+        <!-- Dynamically populated -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="text-center py-5 d-none">
+        <i class="bi bi-bell-slash d-block fs-1 mb-3 opacity-25"></i>
+        <p class="text-secondary">No announcements in this category.</p>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+
+<script>
+  let currentFilter = 'All';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => filterAnn('All'), 100);
+  });
+
+  function filterAnn(type) {
+    currentFilter = type;
+
+    // Update buttons
+    ['btn-all', 'btn-students', 'btn-general'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) { btn.className = 'btn btn-outline-secondary btn-sm'; }
+    });
+    const activeMap = { 'All': 'btn-all', 'Students Only': 'btn-students', 'General': 'btn-general' };
+    const activeBtn = document.getElementById(activeMap[type]);
+    if (activeBtn) activeBtn.className = 'btn btn-primary btn-sm';
+
+    renderAnnouncements();
+  }
+
+  function renderAnnouncements() {
+    const allNotices = JSON.parse(localStorage.getItem('cms_announcements') || '[]');
+
+    // Students can only see announcements targeting All or Students Only
+    let visible = allNotices.filter(a => a.audience === 'All' || a.audience === 'Students Only');
+
+    if (currentFilter === 'Students Only') {
+      visible = visible.filter(a => a.audience === 'Students Only');
+    } else if (currentFilter === 'General') {
+      visible = visible.filter(a => a.audience === 'All');
+    }
+
+    // Sort newest first
+    visible.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const grid = document.getElementById('notices-grid');
+    const emptyState = document.getElementById('empty-state');
+    grid.innerHTML = '';
+
+    document.getElementById('notice-count').textContent = `${visible.length} notice${visible.length !== 1 ? 's' : ''} found`;
+
+    if (visible.length === 0) {
+      emptyState.classList.remove('d-none');
+      return;
+    }
+
+    emptyState.classList.add('d-none');
+
+    visible.forEach(a => {
+      const isNew = (new Date() - new Date(a.date)) / (1000 * 60 * 60 * 24) <= 3;
+      const audienceTag = a.audience === 'Students Only'
+        ? '<span class="notice-tag bg-warning text-dark">For Students</span>'
+        : '<span class="notice-tag bg-secondary text-white">General</span>';
+
+      const col = document.createElement('div');
+      col.className = 'col-12 col-md-6 col-xl-4';
+      col.innerHTML = `
+        <div class="card glass-card p-4 h-100 notice-card border border-light-subtle shadow-sm">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            ${audienceTag}
+            ${isNew ? '<span class="badge bg-danger" style="font-size:0.65rem;">NEW</span>' : ''}
+          </div>
+          <h6 class="fw-bold mb-2">${a.title}</h6>
+          <p class="small text-secondary mb-auto">${a.message}</p>
+          <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary border-opacity-10" style="font-size:0.72rem;">
+            <span class="text-secondary">By <strong>${a.postedBy}</strong></span>
+            <span class="text-secondary">${a.date}</span>
+          </div>
+        </div>
+      `;
+      grid.appendChild(col);
+    });
+  }
+</script>
+</body>
+</html>

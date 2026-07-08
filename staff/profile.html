@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - Apex College Faculty</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Profile Banner -->
+      <div class="card glass-card p-4 mb-4" style="background: linear-gradient(135deg, #0d9488 0%, #134e4a 100%); color: #fff; border:none;">
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+          <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold fs-1" id="avatar-circle" style="width:90px; height:90px; background: rgba(255,255,255,0.2); min-width:90px;"></div>
+          <div>
+            <span class="badge bg-white fw-bold mb-2" style="color: #0d9488;">Faculty Member</span>
+            <h2 class="fw-bold mb-1" id="profile-name">—</h2>
+            <p class="mb-0 opacity-80" id="profile-sub">—</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Left: Info -->
+        <div class="col-12 col-lg-7">
+          <div class="card glass-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Faculty Profile Details</h5>
+            <ul class="list-unstyled d-flex flex-column gap-2 small text-secondary">
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Staff ID</span><strong class="text-dark-theme-override" id="d-id">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Username</span><strong class="text-dark-theme-override" id="d-user">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Department</span><strong class="text-dark-theme-override" id="d-dept">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Designation</span><strong class="text-dark-theme-override" id="d-designation">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Assigned Class</span><strong class="text-dark-theme-override" id="d-class">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Subjects Taught</span><strong class="text-dark-theme-override" id="d-subjects" style="max-width:180px; text-align:right;">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Email</span><strong class="text-dark-theme-override" id="d-email">—</strong></li>
+              <li class="d-flex justify-content-between py-1"><span>Phone</span><strong class="text-dark-theme-override" id="d-phone">—</strong></li>
+            </ul>
+          </div>
+
+          <!-- Bio Edit -->
+          <div class="card glass-card p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Bio / Introduction</h5>
+            <textarea id="bio-input" class="form-control mb-3" rows="4" placeholder="Write a short bio about yourself..."></textarea>
+            <button onclick="saveBio()" class="btn btn-primary">Save Bio</button>
+          </div>
+        </div>
+
+        <!-- Right: Stats Card -->
+        <div class="col-12 col-lg-5">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-bold mb-4 border-bottom pb-2">My Class Stats</h5>
+            <div class="d-flex flex-column gap-3">
+              <div class="p-3 rounded-3 border border-secondary border-opacity-25">
+                <div class="small text-secondary">Assigned Students</div>
+                <h3 class="fw-bold mb-0" id="stat-students">0</h3>
+              </div>
+              <div class="p-3 rounded-3 border border-secondary border-opacity-25">
+                <div class="small text-secondary">Class Avg Attendance</div>
+                <h3 class="fw-bold mb-0" id="stat-attendance">0%</h3>
+              </div>
+              <div class="p-3 rounded-3 border border-secondary border-opacity-25">
+                <div class="small text-secondary">Class Avg CGPA</div>
+                <h3 class="fw-bold mb-0" id="stat-cgpa">0.00</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  let staffRecord = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadProfile, 100);
+  });
+
+  function loadProfile() {
+    const session = getSession();
+    if (!session) return;
+
+    staffRecord = getStaffById(session.linkedId);
+    if (!staffRecord) {
+      // Show a fallback for admin credentials
+      document.getElementById('profile-name').textContent = session.username;
+      return;
+    }
+
+    const initials = staffRecord.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    document.getElementById('avatar-circle').textContent = initials;
+    document.getElementById('profile-name').textContent = staffRecord.name;
+    document.getElementById('profile-sub').textContent = `${staffRecord.designation} · ${staffRecord.department}`;
+    document.getElementById('d-id').textContent = staffRecord.id;
+    document.getElementById('d-user').textContent = `@${staffRecord.username}`;
+    document.getElementById('d-dept').textContent = staffRecord.department;
+    document.getElementById('d-designation').textContent = staffRecord.designation;
+    document.getElementById('d-class').textContent = staffRecord.assignedClass || 'N/A';
+    document.getElementById('d-subjects').textContent = staffRecord.subjectsTaught;
+    document.getElementById('d-email').textContent = staffRecord.email;
+    document.getElementById('d-phone').textContent = staffRecord.phone;
+    document.getElementById('bio-input').value = staffRecord.bio || '';
+
+    // Class stats
+    const allStudents = getAllStudents();
+    let myStudents = allStudents;
+    if (staffRecord.assignedClass) {
+      const yearPart = staffRecord.assignedClass.split(' - ')[0];
+      const sectionPart = staffRecord.assignedClass.split(' - ')[1];
+      myStudents = allStudents.filter(s => s.year === yearPart && (s.section === sectionPart || !s.section));
+    }
+    document.getElementById('stat-students').textContent = myStudents.length;
+    if (myStudents.length > 0) {
+      const avgAtt = (myStudents.reduce((a, s) => a + (s.attendancePercent || 0), 0) / myStudents.length).toFixed(1);
+      const avgCgpa = (myStudents.reduce((a, s) => a + (s.cgpa || 0), 0) / myStudents.length).toFixed(2);
+      document.getElementById('stat-attendance').textContent = `${avgAtt}%`;
+      document.getElementById('stat-cgpa').textContent = avgCgpa;
+    }
+  }
+
+  function saveBio() {
+    if (!staffRecord) { showToast("No staff record found to update.", "warning"); return; }
+    const bio = document.getElementById('bio-input').value.trim();
+    updateStaff(staffRecord.id, { ...staffRecord, bio });
+    staffRecord.bio = bio;
+    showToast("Bio updated successfully!", "success");
+  }
+</script>
+</body>
+</html>

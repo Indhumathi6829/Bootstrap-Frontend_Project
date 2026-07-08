@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enroll Student - Apex College</title>
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <!-- App Container Layout -->
+  <div id="app-container">
+    <main id="main-content">
+      <!-- Dynamic Header & Sidebar injected by app.js -->
+      
+      <!-- Content Container -->
+      <div class="container-fluid p-4 animate-fade-in">
+        
+        <!-- Form Header -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h4 class="fw-bold mb-1">Add Student Record</h4>
+            <p class="text-secondary">Fill in the fields below to enroll a new student in Apex College.</p>
+          </div>
+        </div>
+
+        <!-- Add Student Form Card -->
+        <div class="card glass-card p-4">
+          <form id="add-student-form" onsubmit="handleFormSubmit(event)" novalidate>
+            
+            <!-- SECTION 1: Personal Details -->
+            <div class="mb-4">
+              <h5 class="fw-semibold mb-3 border-bottom pb-2 text-indigo" style="color: var(--primary-color);">
+                <i class="bi bi-person-fill me-2"></i>Personal Details
+              </h5>
+              <div class="row g-3">
+                <!-- Student ID -->
+                <div class="col-12 col-md-4">
+                  <label for="student-id" class="form-label small fw-medium text-secondary">Student ID <span class="text-danger">*</span></label>
+                  <input type="text" id="student-id" class="form-control" placeholder="e.g. STU013" onblur="validateField('student-id')" required>
+                  <div class="form-text" style="font-size: 0.75rem;">Format: STU followed by 3-6 digits. Must be unique.</div>
+                </div>
+                
+                <!-- Roll Number -->
+                <div class="col-12 col-md-4">
+                  <label for="roll-number" class="form-label small fw-medium text-secondary">Roll Number <span class="text-danger">*</span></label>
+                  <input type="text" id="roll-number" class="form-control" placeholder="e.g. 23CS13" onblur="validateField('roll-number')" required>
+                  <div class="form-text" style="font-size: 0.75rem;">Format: e.g. 23CS01 (Year + Dept + Roll). Must be unique.</div>
+                </div>
+
+                <!-- Full Name -->
+                <div class="col-12 col-md-4">
+                  <label for="full-name" class="form-label small fw-medium text-secondary">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" id="full-name" class="form-control" placeholder="Enter full name" onblur="validateField('full-name')" required>
+                </div>
+
+                <!-- Gender -->
+                <div class="col-12 col-md-4">
+                  <label for="gender" class="form-label small fw-medium text-secondary">Gender <span class="text-danger">*</span></label>
+                  <select id="gender" class="form-select" onblur="validateField('gender')" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="col-12 col-md-4">
+                  <label for="dob" class="form-label small fw-medium text-secondary">Date of Birth <span class="text-danger">*</span></label>
+                  <input type="date" id="dob" class="form-control" onblur="validateField('dob')" required>
+                </div>
+
+                <!-- Blood Group -->
+                <div class="col-12 col-md-4">
+                  <label for="blood-group" class="form-label small fw-medium text-secondary">Blood Group</label>
+                  <select id="blood-group" class="form-select">
+                    <option value="">Select Blood Group</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+
+                <!-- Section -->
+                <div class="col-12 col-md-4">
+                  <label for="section" class="form-label small fw-medium text-secondary">Assigned Section <span class="text-danger">*</span></label>
+                  <select id="section" class="form-select" required>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                  </select>
+                </div>
+
+                <!-- Profile Photo URL -->
+                <div class="col-12 col-md-8">
+                  <label for="photo-url" class="form-label small fw-medium text-secondary">Profile Image URL (Optional)</label>
+                  <input type="url" id="photo-url" class="form-control" placeholder="https://example.com/photo.jpg">
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 2: Academic Details -->
+            <div class="mb-4">
+              <h5 class="fw-semibold mb-3 border-bottom pb-2 text-indigo" style="color: var(--primary-color);">
+                <i class="bi bi-mortarboard-fill me-2"></i>Academic Details
+              </h5>
+              <div class="row g-3">
+                <!-- Department -->
+                <div class="col-12 col-md-4">
+                  <label for="department" class="form-label small fw-medium text-secondary">Department <span class="text-danger">*</span></label>
+                  <select id="department" class="form-select" onblur="validateField('department')" required>
+                    <option value="">Select Department</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Electronics & Communication">Electronics & Communication</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  </select>
+                </div>
+
+                <!-- Year of Study -->
+                <div class="col-12 col-md-4">
+                  <label for="year" class="form-label small fw-medium text-secondary">Year <span class="text-danger">*</span></label>
+                  <select id="year" class="form-select" onblur="validateField('year')" required>
+                    <option value="">Select Year</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                  </select>
+                </div>
+
+                <!-- Semester -->
+                <div class="col-12 col-md-4">
+                  <label for="semester" class="form-label small fw-medium text-secondary">Semester <span class="text-danger">*</span></label>
+                  <select id="semester" class="form-select" onblur="validateField('semester')" required>
+                    <option value="">Select Semester</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                  </select>
+                </div>
+
+                <!-- CGPA -->
+                <div class="col-12 col-md-4">
+                  <label for="cgpa" class="form-label small fw-medium text-secondary">CGPA <span class="text-danger">*</span></label>
+                  <input type="number" step="0.01" id="cgpa" class="form-control" placeholder="e.g. 8.50" onblur="validateField('cgpa')" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 3: Contact Details -->
+            <div class="mb-4">
+              <h5 class="fw-semibold mb-3 border-bottom pb-2 text-indigo" style="color: var(--primary-color);">
+                <i class="bi bi-telephone-fill me-2"></i>Contact Details
+              </h5>
+              <div class="row g-3">
+                <!-- Email Address -->
+                <div class="col-12 col-md-6">
+                  <label for="email" class="form-label small fw-medium text-secondary">Email Address <span class="text-danger">*</span></label>
+                  <input type="email" id="email" class="form-control" placeholder="name@college.edu" onblur="validateField('email')" required>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="col-12 col-md-6">
+                  <label for="phone" class="form-label small fw-medium text-secondary">Phone Number <span class="text-danger">*</span></label>
+                  <input type="tel" id="phone" class="form-control" placeholder="10-digit number" onblur="validateField('phone')" required>
+                </div>
+
+                <!-- Address -->
+                <div class="col-12">
+                  <label for="address" class="form-label small fw-medium text-secondary">Residential Address <span class="text-danger">*</span></label>
+                  <textarea id="address" class="form-control" rows="2" placeholder="Street Address, City, Pincode" onblur="validateField('address')" required></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 4: Parent/Guardian Details -->
+            <div class="mb-4">
+              <h5 class="fw-semibold mb-3 border-bottom pb-2 text-indigo" style="color: var(--primary-color);">
+                <i class="bi bi-people-fill me-2"></i>Parent / Guardian Details
+              </h5>
+              <div class="row g-3">
+                <!-- Parent Name -->
+                <div class="col-12 col-md-6">
+                  <label for="parent-name" class="form-label small fw-medium text-secondary">Parent Name <span class="text-danger">*</span></label>
+                  <input type="text" id="parent-name" class="form-control" placeholder="Parent or Guardian's name" onblur="validateField('parent-name')" required>
+                </div>
+
+                <!-- Parent Phone -->
+                <div class="col-12 col-md-6">
+                  <label for="parent-phone" class="form-label small fw-medium text-secondary">Parent Phone Number <span class="text-danger">*</span></label>
+                  <input type="tel" id="parent-phone" class="form-control" placeholder="10-digit number" onblur="validateField('parent-phone')" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions Row -->
+            <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top border-secondary border-opacity-10">
+              <a href="students.html" class="btn btn-light px-4">Cancel</a>
+              <button type="submit" class="btn btn-primary px-5">Save Student</button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Core Scripts -->
+  <script src="../js/app.js"></script>
+  <script src="../js/student.js"></script>
+  <script src="../js/validation.js"></script>
+
+  <script>
+    function validateField(fieldId) {
+      const el = document.getElementById(fieldId);
+      if (!el) return true;
+
+      switch(fieldId) {
+        case 'student-id':
+          return Validation.validateStudentIdUnique(el);
+        case 'roll-number':
+          return Validation.validateRollNumberUnique(el);
+        case 'full-name':
+          return Validation.validateRequired(el, "Full Name");
+        case 'dob':
+          return Validation.validateRequired(el, "Date of Birth");
+        case 'gender':
+          return Validation.validateRequired(el, "Gender");
+        case 'department':
+          return Validation.validateRequired(el, "Department");
+        case 'year':
+          return Validation.validateRequired(el, "Year of Study");
+        case 'semester':
+          return Validation.validateRequired(el, "Semester");
+        case 'email':
+          return Validation.validateEmail(el);
+        case 'phone':
+          return Validation.validatePhone(el, "Student Phone Number");
+        case 'address':
+          return Validation.validateRequired(el, "Residential Address");
+        case 'parent-name':
+          return Validation.validateRequired(el, "Parent Name");
+        case 'parent-phone':
+          return Validation.validatePhone(el, "Parent Phone Number");
+        case 'cgpa':
+          return Validation.validateCGPA(el);
+        default:
+          return true;
+      }
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const fieldsToValidate = [
+        'student-id', 'roll-number', 'full-name', 'gender', 'dob',
+        'department', 'year', 'semester', 'cgpa', 'email', 'phone',
+        'address', 'parent-name', 'parent-phone'
+      ];
+
+      let isFormValid = true;
+      fieldsToValidate.forEach(fieldId => {
+        const isValid = validateField(fieldId);
+        if (!isValid) isFormValid = false;
+      });
+
+      if (!isFormValid) {
+        showToast("Please correct the errors in the form.", "danger");
+        return;
+      }
+
+      // Collect data
+      const newStudent = {
+        id: document.getElementById('student-id').value.trim().toUpperCase(),
+        rollNumber: document.getElementById('roll-number').value.trim().toUpperCase(),
+        name: document.getElementById('full-name').value.trim(),
+        gender: document.getElementById('gender').value,
+        dob: document.getElementById('dob').value,
+        bloodGroup: document.getElementById('blood-group').value,
+        section: document.getElementById('section').value,
+        photoUrl: document.getElementById('photo-url').value.trim(),
+        department: document.getElementById('department').value,
+        year: document.getElementById('year').value,
+        semester: document.getElementById('semester').value,
+        cgpa: parseFloat(document.getElementById('cgpa').value),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        parentName: document.getElementById('parent-name').value.trim(),
+        parentPhone: document.getElementById('parent-phone').value.trim(),
+        attendancePercent: 0
+      };
+
+      try {
+        addStudent(newStudent);
+        showToast("Student enrolled successfully! Credentials created: " + newStudent.name.split(' ')[0].toLowerCase() + newStudent.id.substring(3), "success");
+        setTimeout(() => {
+          window.location.href = 'students.html';
+        }, 1500);
+      } catch(err) {
+        showToast("Registration failed: " + err.message, "danger");
+      }
+    }
+  </script>
+</body>
+</html>

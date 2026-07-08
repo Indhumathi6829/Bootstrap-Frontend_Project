@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome - Apex College</title>
+  <meta name="description" content="Welcome to Apex College - Nurturing Excellence in Education Since 1985.">
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .welcome-navbar {
+      height: 75px;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      z-index: 1050;
+    }
+    [data-theme="dark"] .welcome-navbar {
+      background-color: rgba(11, 15, 25, 0.9);
+    }
+    .hero-section {
+      padding: 100px 0 80px;
+      background: radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 10% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+                  var(--bg-primary);
+      min-height: 550px;
+      display: flex;
+      align-items: center;
+    }
+    .feature-icon-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: rgba(79, 70, 229, 0.08);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .stat-card-landing {
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      background-color: var(--bg-secondary);
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card-landing:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-shadow);
+    }
+    .stat-number-landing {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .testimonial-card {
+      border-radius: 1rem;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-secondary);
+      padding: 2rem;
+      height: 100%;
+    }
+    .landing-footer {
+      background-color: #0f172a;
+      color: #94a3b8;
+      padding: 40px 0 20px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg welcome-navbar fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.html">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="var(--primary-color)" />
+          <path d="M17 10.2V17C17 19 14.5 20.5 12 20.5C9.5 20.5 7 19 7 17V10.2L12 12.7L17 10.2Z" fill="var(--primary-color)" opacity="0.85" />
+        </svg>
+        <span id="brand-name" class="text-dark" style="color: var(--text-primary) !important;">Apex College</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#welcomeNav" aria-controls="welcomeNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="welcomeNav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-3">
+          <li class="nav-item">
+            <a class="nav-link fw-medium text-secondary active" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-medium text-secondary" href="about.html">About Portal</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-medium text-secondary" href="contact.html">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link text-decoration-none text-secondary p-0" onclick="toggleTheme()" title="Toggle Theme">
+              <i id="theme-icon" class="bi bi-moon-fill fs-5 text-primary"></i>
+            </button>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a href="login.html" class="btn btn-primary px-4 py-2 text-white">Portal Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-12 col-lg-6 text-center text-lg-start">
+          <h1 class="display-4 fw-bold lh-sm mb-3" style="color: var(--text-primary);">
+            Shaping the Leaders of <span style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tomorrow</span>
+          </h1>
+          <p class="lead text-secondary mb-4" id="hero-tagline">
+            Excellence in Education Since 1985. Apex College offers state-of-the-art infrastructure, world-class faculty, and industry-aligned curricula to propel your career.
+          </p>
+          <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3">
+            <a href="login.html" class="btn btn-primary btn-lg px-5 py-3 fs-6 d-flex align-items-center justify-content-center gap-2">
+              <span>Enter Student/Staff Portal</span>
+              <i class="bi bi-box-arrow-in-right"></i>
+            </a>
+            <a href="about.html" class="btn btn-outline-secondary btn-lg px-5 py-3 fs-6">Learn More</a>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 text-center">
+          <div class="position-relative d-inline-block">
+            <div class="mx-auto bg-indigo rounded-circle text-white d-flex align-items-center justify-content-center shadow-lg animate-fade-in" style="width: 280px; height: 280px; background-color: var(--primary-color) !important;">
+              <i class="bi bi-mortarboard-fill" style="font-size: 7.5rem;"></i>
+            </div>
+            <div class="position-absolute bg-white rounded-3 shadow p-3 border border-light-subtle d-flex align-items-center gap-3 animate-fade-in" style="top: 20px; left: -20px;">
+              <div class="rounded-circle bg-success bg-opacity-10 p-2.5 text-success"><i class="bi bi-patch-check-fill fs-4"></i></div>
+              <div class="text-start"><h6 class="mb-0 fw-bold">A++ Accredited</h6><small class="text-secondary">National Board</small></div>
+            </div>
+            <div class="position-absolute bg-white rounded-3 shadow p-3 border border-light-subtle d-flex align-items-center gap-3 animate-fade-in" style="bottom: 20px; right: -20px;">
+              <div class="rounded-circle bg-info bg-opacity-10 p-2.5 text-info"><i class="bi bi-award-fill fs-4"></i></div>
+              <div class="text-start"><h6 class="mb-0 fw-bold">Ranked Top 10</h6><small class="text-secondary">Engineering Colleges</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Facts / Stats Section -->
+  <section class="py-5 border-top border-bottom border-light-subtle bg-body-tertiary">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Fact 1 -->
+        <div class="col-6 col-md-3">
+          <div class="stat-card-landing">
+            <div class="stat-number-landing">1985</div>
+            <div class="text-secondary small fw-medium text-uppercase tracking-wider">Established Year</div>
+          </div>
+        </div>
+        <!-- Fact 2 -->
+        <div class="col-6 col-md-3">
+          <div class="stat-card-landing">
+            <div class="stat-number-landing">4</div>
+            <div class="text-secondary small fw-medium text-uppercase tracking-wider">Departments</div>
+          </div>
+        </div>
+        <!-- Fact 3 -->
+        <div class="col-6 col-md-3">
+          <div class="stat-card-landing">
+            <div class="stat-number-landing" id="count-students">12</div>
+            <div class="text-secondary small fw-medium text-uppercase tracking-wider">Active Students</div>
+          </div>
+        </div>
+        <!-- Fact 4 -->
+        <div class="col-6 col-md-3">
+          <div class="stat-card-landing">
+            <div class="stat-number-landing" id="count-staff">6</div>
+            <div class="text-secondary small fw-medium text-uppercase tracking-wider">Faculty Members</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Offered Departments preview -->
+  <section class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold" style="color: var(--text-primary);">Academic Departments</h2>
+        <p class="text-secondary max-w-600 mx-auto">Explore our core engineering and technical disciplines designed to fuel scientific innovation.</p>
+      </div>
+      <div class="row g-4">
+        <!-- CS -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 p-4 border border-light-subtle rounded-4 shadow-sm bg-body">
+            <div class="feature-icon-box"><i class="bi bi-cpu-fill"></i></div>
+            <h5 class="fw-bold">Computer Science</h5>
+            <p class="text-secondary small mb-0">Covering Algorithm Design, Programming, Web Technologies, Database Systems, and Artificial Intelligence.</p>
+          </div>
+        </div>
+        <!-- EC -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 p-4 border border-light-subtle rounded-4 shadow-sm bg-body">
+            <div class="feature-icon-box" style="background: rgba(6, 182, 212, 0.08); color: #06b6d4;"><i class="bi bi-hdd-network-fill"></i></div>
+            <h5 class="fw-bold">Electronics & Comm.</h5>
+            <p class="text-secondary small mb-0">Specializing in Microcontrollers, Digital Circuit Design, Embedded Systems, and Wireless Networking.</p>
+          </div>
+        </div>
+        <!-- IT -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 p-4 border border-light-subtle rounded-4 shadow-sm bg-body">
+            <div class="feature-icon-box" style="background: rgba(16, 185, 129, 0.08); color: #10b981;"><i class="bi bi-cloud-check-fill"></i></div>
+            <h5 class="fw-bold">Information Technology</h5>
+            <p class="text-secondary small mb-0">Focusing on Cloud Computing, Computer Networks, Software Engineering and Information Systems Security.</p>
+          </div>
+        </div>
+        <!-- ME -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 p-4 border border-light-subtle rounded-4 shadow-sm bg-body">
+            <div class="feature-icon-box" style="background: rgba(245, 158, 11, 0.08); color: #f59e0b;"><i class="bi bi-gear-wide-connected"></i></div>
+            <h5 class="fw-bold">Mechanical Eng.</h5>
+            <p class="text-secondary small mb-0">Focusing on Thermodynamics, CAD Modeling, Fluid Mechanics, Aerodynamics, and Robotics.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Notices Section -->
+  <section class="py-5 bg-body-tertiary">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-12 col-lg-6">
+          <h2 class="fw-bold mb-4" style="color: var(--text-primary);">Latest Announcements</h2>
+          <div class="timeline" id="announcements-timeline">
+            <!-- Notices loaded dynamically -->
+          </div>
+        </div>
+        <div class="col-12 col-lg-6">
+          <h2 class="fw-bold mb-4" style="color: var(--text-primary);">Student Testimonials</h2>
+          <div class="row g-4">
+            <div class="col-12">
+              <div class="testimonial-card">
+                <p class="fst-italic text-secondary">"The faculty at Apex College is exceptionally supportive. The coding bootcamps and hands-on lab sessions helped me secure an internship during my third year. The portal makes it very easy to track our weekly grades and progress."</p>
+                <div class="d-flex align-items-center gap-3 mt-3">
+                  <div class="avatar-sm bg-primary" style="width: 40px; height: 40px; font-size: 0.9rem;">AS</div>
+                  <div>
+                    <h6 class="mb-0 fw-bold">Aarav Sharma</h6>
+                    <small class="text-secondary">3rd Year, Computer Science</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="testimonial-card">
+                <p class="fst-italic text-secondary">"Studying ECE here is a fantastic experience. Building custom microcontrollers and learning circuit design in the modern laboratories gives real practical skills that companies look for in job interviews."</p>
+                <div class="d-flex align-items-center gap-3 mt-3">
+                  <div class="avatar-sm bg-info" style="width: 40px; height: 40px; font-size: 0.9rem; background-color: #06b6d4 !important;">PS</div>
+                  <div>
+                    <h6 class="mb-0 fw-bold">Priyanka Sen</h6>
+                    <small class="text-secondary">2nd Year, ECE</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer text-center">
+    <div class="container">
+      <div class="row gy-4 text-md-start mb-4">
+        <div class="col-12 col-md-6">
+          <h5 class="text-white fw-bold mb-3">APEX COLLEGE</h5>
+          <p class="small text-secondary mb-0 max-w-400">An institution dedicated to academic brilliance, cutting-edge research, and shaping global professionals since 1985.</p>
+        </div>
+        <div class="col-12 col-md-3">
+          <h6 class="text-white fw-semibold mb-3">Public Links</h6>
+          <ul class="list-unstyled small mb-0">
+            <li><a href="about.html" class="text-secondary text-decoration-none">About College</a></li>
+            <li><a href="contact.html" class="text-secondary text-decoration-none">Contact Support</a></li>
+            <li><a href="login.html" class="text-secondary text-decoration-none">Portal Login</a></li>
+          </ul>
+        </div>
+        <div class="col-12 col-md-3">
+          <h6 class="text-white fw-semibold mb-3">Support Contacts</h6>
+          <p class="small text-secondary mb-1"><i class="bi bi-envelope-fill me-1"></i> support@apexcollege.edu</p>
+          <p class="small text-secondary mb-0"><i class="bi bi-telephone-fill me-1"></i> +91 80 4321 0099</p>
+        </div>
+      </div>
+      <hr class="border-secondary opacity-25 my-4">
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-secondary">
+        <p class="mb-0">&copy; 2026 Apex College Management System. All rights reserved.</p>
+        <p class="mb-0 mt-2 mt-sm-0">Seeded Client-Side Database Demo Portal</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // In index.html, run a light version of script to seed database and render recent announcements
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Seed database on first visit
+      const isSeeded = localStorage.getItem('cms_users');
+      if (!isSeeded) {
+        // Run seed function by writing placeholder logic or import app.js
+        // We will load app.js to handle full seeding and theme
+      }
+      
+      // 2. Fetch and apply branding settings
+      const branding = JSON.parse(localStorage.getItem('cms_branding') || '{}');
+      if (branding.collegeName) {
+        document.getElementById('brand-name').textContent = branding.collegeName;
+      }
+      if (branding.tagline) {
+        document.getElementById('hero-tagline').textContent = branding.tagline + ' Apex College offers state-of-the-art infrastructure, world-class faculty, and industry-aligned curricula.';
+      }
+      if (branding.accentColor) {
+        document.documentElement.style.setProperty('--primary-color', branding.accentColor);
+      }
+      
+      // 3. Render Announcements
+      renderLatestAnnouncements();
+      
+      // 4. Update student and staff counters
+      const students = JSON.parse(localStorage.getItem('cms_students') || '[]');
+      const staffList = JSON.parse(localStorage.getItem('cms_staff') || '[]');
+      if (students.length > 0) document.getElementById('count-students').textContent = students.length;
+      if (staffList.length > 0) document.getElementById('count-staff').textContent = staffList.length;
+
+      // 5. Theme
+      const savedTheme = localStorage.getItem('cms_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const themeIcon = document.getElementById('theme-icon');
+      if (themeIcon) {
+        themeIcon.className = savedTheme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill text-primary';
+      }
+    });
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('cms_theme', newTheme);
+      
+      const themeIcon = document.getElementById('theme-icon');
+      if (themeIcon) {
+        themeIcon.className = newTheme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill text-primary';
+      }
+    }
+
+    function renderLatestAnnouncements() {
+      const container = document.getElementById('announcements-timeline');
+      if (!container) return;
+
+      const announcements = JSON.parse(localStorage.getItem('cms_announcements') || '[]');
+      // Filter for 'All' or 'Students Only'
+      const publicAnnouncements = announcements
+        .filter(ann => ann.audience === 'All' || ann.audience === 'Students Only')
+        .slice(0, 3); // latest 3
+
+      if (publicAnnouncements.length === 0) {
+        container.innerHTML = `<p class="text-secondary small">No announcements posted yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      publicAnnouncements.forEach(ann => {
+        const item = document.createElement('div');
+        item.className = 'timeline-item';
+        item.innerHTML = `
+          <div class="timeline-marker success"></div>
+          <div class="timeline-content">
+            <h6 class="fw-bold mb-1" style="font-size: 0.95rem;">${ann.title}</h6>
+            <p class="text-secondary small mb-1">${ann.message}</p>
+            <div class="timeline-time">${ann.date} &bull; Posted by ${ann.postedBy}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+  </script>
+</body>
+</html>

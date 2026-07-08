@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact - Apex College</title>
+  <meta name="description" content="Get in touch with Apex College admissions or support office.">
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .welcome-navbar {
+      height: 75px;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 1050;
+    }
+    [data-theme="dark"] .welcome-navbar {
+      background-color: rgba(11, 15, 25, 0.9);
+    }
+    .contact-header {
+      padding: 120px 0 60px;
+      background: radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%), var(--bg-primary);
+      text-align: center;
+    }
+    .landing-footer {
+      background-color: #0f172a;
+      color: #94a3b8;
+      padding: 40px 0 20px;
+      font-size: 0.9rem;
+    }
+    .contact-icon-card {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+    .contact-icon-wrapper {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(79, 70, 229, 0.08);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .map-box-placeholder {
+      height: 280px;
+      background-color: var(--bg-primary);
+      border: 1px dashed var(--border-color);
+      border-radius: 0.75rem;
+      display: flex;
+      flex-column: true;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg welcome-navbar fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.html">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="var(--primary-color)" />
+          <path d="M17 10.2V17C17 19 14.5 20.5 12 20.5C9.5 20.5 7 19 7 17V10.2L12 12.7L17 10.2Z" fill="var(--primary-color)" opacity="0.85" />
+        </svg>
+        <span id="brand-name" class="text-dark" style="color: var(--text-primary) !important;">Apex College</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#welcomeNav" aria-controls="welcomeNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="welcomeNav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-3">
+          <li class="nav-item">
+            <a class="nav-link fw-medium text-secondary" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-medium text-secondary" href="about.html">About Portal</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-medium text-secondary active" href="contact.html">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link text-decoration-none text-secondary p-0" onclick="toggleTheme()" title="Toggle Theme">
+              <i id="theme-icon" class="bi bi-moon-fill fs-5 text-primary"></i>
+            </button>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a href="login.html" class="btn btn-primary px-4 py-2 text-white">Portal Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contact Header -->
+  <header class="contact-header border-bottom border-light-subtle">
+    <div class="container">
+      <h1 class="display-5 fw-bold" style="color: var(--text-primary);">Contact Support & Admissions</h1>
+      <p class="text-secondary max-w-600 mx-auto lead mt-2">Have queries regarding admissions, portal login or technical issues? Get in touch with us.</p>
+    </div>
+  </header>
+
+  <!-- Main Content Grid -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-5">
+        
+        <!-- Left Column: Contact Form -->
+        <div class="col-12 col-lg-7">
+          <div class="card p-4 p-md-5 border border-light-subtle rounded-4 bg-body shadow-sm">
+            <h3 class="fw-bold mb-4">Send a Message</h3>
+            
+            <form id="contact-form" onsubmit="handleContactSubmit(event)" novalidate>
+              <div class="row g-3">
+                <div class="col-12 col-sm-6">
+                  <label for="contact-name" class="form-label small fw-medium text-secondary">Your Name</label>
+                  <input type="text" class="form-control" id="contact-name" placeholder="John Doe" required>
+                  <div class="invalid-feedback">Name is required.</div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label for="contact-email" class="form-label small fw-medium text-secondary">Email Address</label>
+                  <input type="email" class="form-control" id="contact-email" placeholder="john@example.com" required>
+                  <div class="invalid-feedback">Please enter a valid email.</div>
+                </div>
+                <div class="col-12">
+                  <label for="contact-subject" class="form-label small fw-medium text-secondary">Subject</label>
+                  <input type="text" class="form-control" id="contact-subject" placeholder="Portal Access Query" required>
+                  <div class="invalid-feedback">Subject is required.</div>
+                </div>
+                <div class="col-12">
+                  <label for="contact-message" class="form-label small fw-medium text-secondary">Message</label>
+                  <textarea class="form-control" id="contact-message" rows="5" placeholder="Write your message here..." required></textarea>
+                  <div class="invalid-feedback">Message content is required.</div>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary px-4 py-2.5 d-flex align-items-center gap-2">
+                    <span>Submit Query</span>
+                    <i class="bi bi-send-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Column: Contact Details & Map -->
+        <div class="col-12 col-lg-5">
+          <div class="card p-4 border border-light-subtle rounded-4 bg-body shadow-sm h-100 d-flex flex-column justify-content-between">
+            <div>
+              <h3 class="fw-bold mb-4">Campus Info</h3>
+              
+              <!-- Address -->
+              <div class="contact-icon-card">
+                <div class="contact-icon-wrapper"><i class="bi bi-geo-alt"></i></div>
+                <div>
+                  <h6 class="fw-bold mb-1">Campus Address</h6>
+                  <p class="text-secondary small mb-0">Apex College Campus, Outer Ring Road, Indiranagar Phase II, Bangalore, Karnataka - 560038</p>
+                </div>
+              </div>
+
+              <!-- Phone -->
+              <div class="contact-icon-card">
+                <div class="contact-icon-wrapper"><i class="bi bi-telephone"></i></div>
+                <div>
+                  <h6 class="fw-bold mb-1">General Office & Admin Office</h6>
+                  <p class="text-secondary small mb-0">+91 80 4321 0099 / +91 80 4321 0088</p>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="contact-icon-card">
+                <div class="contact-icon-wrapper"><i class="bi bi-envelope"></i></div>
+                <div>
+                  <h6 class="fw-bold mb-1">Institutional Email Addresses</h6>
+                  <p class="text-secondary small mb-1">General Desk: office@apexcollege.edu</p>
+                  <p class="text-secondary small mb-0">Tech Support Desk: support@apexcollege.edu</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Campus Map Placeholder -->
+            <div class="map-box-placeholder text-center flex-column d-flex align-items-center justify-content-center p-3 mt-4">
+              <i class="bi bi-map fs-1 mb-2 text-primary text-opacity-75"></i>
+              <div class="fw-semibold">Apex College Interactive Map</div>
+              <small class="text-secondary">Simulated 3D Campus Plan View (Bengaluru)</small>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer text-center">
+    <div class="container">
+      <div class="row gy-4 text-md-start mb-4">
+        <div class="col-12 col-md-6">
+          <h5 class="text-white fw-bold mb-3">APEX COLLEGE</h5>
+          <p class="small text-secondary mb-0 max-w-400">An institution dedicated to academic brilliance, cutting-edge research, and shaping global professionals since 1985.</p>
+        </div>
+        <div class="col-12 col-md-3">
+          <h6 class="text-white fw-semibold mb-3">Public Links</h6>
+          <ul class="list-unstyled small mb-0">
+            <li><a href="index.html" class="text-secondary text-decoration-none">Homepage</a></li>
+            <li><a href="about.html" class="text-secondary text-decoration-none">About College</a></li>
+            <li><a href="login.html" class="text-secondary text-decoration-none">Portal Login</a></li>
+          </ul>
+        </div>
+        <div class="col-12 col-md-3">
+          <h6 class="text-white fw-semibold mb-3">Support Contacts</h6>
+          <p class="small text-secondary mb-1"><i class="bi bi-envelope-fill me-1"></i> support@apexcollege.edu</p>
+          <p class="small text-secondary mb-0"><i class="bi bi-telephone-fill me-1"></i> +91 80 4321 0099</p>
+        </div>
+      </div>
+      <hr class="border-secondary opacity-25 my-4">
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-secondary">
+        <p class="mb-0">&copy; 2026 Apex College Management System. All rights reserved.</p>
+        <p class="mb-0 mt-2 mt-sm-0">Seeded Client-Side Database Demo Portal</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Core Scripts -->
+  <script src="js/app.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Fetch and apply branding settings
+      const branding = JSON.parse(localStorage.getItem('cms_branding') || '{}');
+      if (branding.collegeName) {
+        document.getElementById('brand-name').textContent = branding.collegeName;
+      }
+      if (branding.accentColor) {
+        document.documentElement.style.setProperty('--primary-color', branding.accentColor);
+      }
+
+      // 2. Theme
+      const savedTheme = localStorage.getItem('cms_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const themeIcon = document.getElementById('theme-icon');
+      if (themeIcon) {
+        themeIcon.className = savedTheme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill text-primary';
+      }
+    });
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('cms_theme', newTheme);
+      
+      const themeIcon = document.getElementById('theme-icon');
+      if (themeIcon) {
+        themeIcon.className = newTheme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill text-primary';
+      }
+    }
+
+    function handleContactSubmit(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('contact-name');
+      const email = document.getElementById('contact-email');
+      const subject = document.getElementById('contact-subject');
+      const message = document.getElementById('contact-message');
+
+      name.classList.remove('is-invalid');
+      email.classList.remove('is-invalid');
+      subject.classList.remove('is-invalid');
+      message.classList.remove('is-invalid');
+
+      let isValid = true;
+      if (!name.value.trim()) {
+        name.classList.add('is-invalid');
+        isValid = false;
+      }
+      // Simple email pattern check
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email.value.trim() || !emailPattern.test(email.value.trim())) {
+        email.classList.add('is-invalid');
+        isValid = false;
+      }
+      if (!subject.value.trim()) {
+        subject.classList.add('is-invalid');
+        isValid = false;
+      }
+      if (!message.value.trim()) {
+        message.classList.add('is-invalid');
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      // Simulate submit success
+      showToast("Thank you for contacting us! We'll reply within 24 hours.", "success");
+      
+      // Clear inputs
+      name.value = '';
+      email.value = '';
+      subject.value = '';
+      message.value = '';
+      
+      name.classList.remove('is-valid');
+      email.classList.remove('is-valid');
+      subject.classList.remove('is-valid');
+      message.classList.remove('is-valid');
+    }
+  </script>
+</body>
+</html>

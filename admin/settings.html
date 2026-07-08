@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Settings - Apex College</title>
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .swatch-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .swatch-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: 3px solid transparent;
+      cursor: pointer; transition: transform .15s;
+    }
+    .swatch-btn:hover { transform: scale(1.15); }
+    .swatch-btn.active { border-color: var(--text-primary) !important; }
+    .settings-section { border-left: 3px solid var(--secondary-color); padding-left: 1rem; margin-bottom: 2rem; }
+    .settings-section h6 { font-size: .95rem; font-weight: 600; margin-bottom: .15rem; }
+    .settings-section p { font-size: .8rem; color: var(--text-secondary); margin-bottom: 1rem; }
+    .danger-zone { border-left: 3px solid #ef4444 !important; }
+  </style>
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <!-- Dynamic Header & Sidebar injected by app.js -->
+
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <div class="row g-4">
+        <div class="col-12 col-lg-8">
+
+          <!-- Branding -->
+          <div class="card glass-card p-4 mb-4">
+            <div class="settings-section">
+              <h6>College Branding</h6>
+              <p>Set the college name and tagline shown on the dashboard and welcome landing page.</p>
+            </div>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-medium small">College Name</label>
+                <input type="text" id="setting-college-name" class="form-control" placeholder="e.g. Apex College" maxlength="80">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-medium small">Tagline</label>
+                <input type="text" id="setting-tagline" class="form-control" placeholder="e.g. Excellence in Education Since 1985" maxlength="100">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-medium small">Logo Icon Style</label>
+                <select id="setting-logo-type" class="form-select">
+                  <option value="crest">Shield Crest Emblem</option>
+                  <option value="mortarboard">Default Mortarboard Cap</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accent Color -->
+          <div class="card glass-card p-4 mb-4">
+            <div class="settings-section">
+              <h6>Accent Colour Swatch</h6>
+              <p>Choose a primary accent colour for the entire application. Applies immediately.</p>
+            </div>
+            <div class="swatch-row mb-3" id="swatch-row">
+              <button class="swatch-btn" data-color="#4f46e5" style="background:#4f46e5" title="Indigo"></button>
+              <button class="swatch-btn" data-color="#0d9488" style="background:#0d9488" title="Teal"></button>
+              <button class="swatch-btn" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
+              <button class="swatch-btn" data-color="#10b981" style="background:#10b981" title="Emerald"></button>
+              <button class="swatch-btn" data-color="#f59e0b" style="background:#f59e0b" title="Amber"></button>
+              <button class="swatch-btn" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+              <button class="swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6" title="Purple"></button>
+              <button class="swatch-btn" data-color="#ec4899" style="background:#ec4899" title="Pink"></button>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <label class="form-label fw-medium small mb-0">Custom hex colour:</label>
+              <input type="color" id="custom-color-picker" class="form-control form-control-color" title="Custom Colour" style="width:48px; height:36px;">
+            </div>
+          </div>
+
+          <!-- Appearance -->
+          <div class="card glass-card p-4 mb-4">
+            <div class="settings-section">
+              <h6>Appearance Theme</h6>
+              <p>Toggle dark/light mode for the application.</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="fw-medium small">Theme:</span>
+              <button id="theme-toggle-btn" class="btn btn-outline-secondary d-flex align-items-center gap-2"
+                onclick="toggleTheme(); updateThemeToggleLabel();">
+                <i class="bi bi-moon-stars-fill" id="theme-btn-icon"></i>
+                <span id="theme-btn-label">Dark Mode</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="card glass-card p-4 mb-4">
+            <div class="settings-section danger-zone">
+              <h6 class="text-danger">Danger Zone</h6>
+              <p class="text-secondary small">These actions are irreversible. Resets database completely to seeds.</p>
+            </div>
+            <div class="d-flex flex-column gap-3">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 rounded-3" style="background:rgba(239,68,68,.06); border:1px solid rgba(239,68,68,.18);">
+                <div>
+                  <div class="fw-semibold small">Clear Activity Log</div>
+                  <div class="text-secondary" style="font-size:.75rem;">Permanently remove all notification and activity history.</div>
+                </div>
+                <button class="btn btn-outline-danger btn-sm" onclick="confirmClearLog()">
+                  <i class="bi bi-eraser me-1"></i>Clear Log
+                </button>
+              </div>
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 rounded-3" style="background:rgba(239,68,68,.06); border:1px solid rgba(239,68,68,.18);">
+                <div>
+                  <div class="fw-semibold small">Reset All Data</div>
+                  <div class="text-secondary" style="font-size:.75rem;">Delete all records, custom setups and re-seed system logins. Cannot be undone.</div>
+                </div>
+                <button class="btn btn-danger btn-sm" onclick="confirmResetAll()">
+                  <i class="bi bi-nuclear me-1"></i>Reset System
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-8 -->
+
+        <!-- Sidebar: Data Stats + Save Button -->
+        <div class="col-12 col-lg-4">
+          <div class="card glass-card p-4 mb-4 sticky-top" style="top:80px;">
+            <h6 class="fw-semibold mb-3">Data Summary</h6>
+            <ul class="list-unstyled small text-secondary mb-4">
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10">
+                <span>Total Students</span>
+                <strong class="text-primary" id="data-stat-students">0</strong>
+              </li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10">
+                <span>Total Faculty</span>
+                <strong class="text-primary" id="data-stat-staff">0</strong>
+              </li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10">
+                <span>Attendance Sheets</span>
+                <strong class="text-primary" id="data-stat-attendance">0</strong>
+              </li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10">
+                <span>Marks Records</span>
+                <strong class="text-primary" id="data-stat-marks">0</strong>
+              </li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10">
+                <span>Activity Logs</span>
+                <strong class="text-primary" id="data-stat-logs">0</strong>
+              </li>
+              <li class="d-flex justify-content-between py-1">
+                <span>Est. Storage Used</span>
+                <strong id="data-stat-storage">—</strong>
+              </li>
+            </ul>
+
+            <button onclick="saveBrandingSettings()" class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2">
+              <i class="bi bi-check2-circle"></i> Save Settings
+            </button>
+          </div>
+        </div>
+      </div><!-- /row -->
+
+    </div>
+  </main>
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core Scripts -->
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  let selectedAccentColor = '#4f46e5';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadSettingsPage, 100);
+  });
+
+  function loadSettingsPage() {
+    const branding = getBranding();
+    
+    document.getElementById('setting-college-name').value = branding.collegeName || 'Apex College';
+    document.getElementById('setting-tagline').value = branding.tagline || '';
+    document.getElementById('setting-logo-type').value = branding.logoType || 'crest';
+
+    selectedAccentColor = branding.accentColor || '#4f46e5';
+    document.getElementById('custom-color-picker').value = selectedAccentColor;
+    
+    setActiveSwatch(selectedAccentColor);
+    setupSwatchListeners();
+    updateThemeToggleLabel();
+    updateDataStats();
+  }
+
+  function setupSwatchListeners() {
+    const swatches = document.querySelectorAll('.swatch-btn');
+    swatches.forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedAccentColor = btn.getAttribute('data-color');
+        document.getElementById('custom-color-picker').value = selectedAccentColor;
+        setActiveSwatch(selectedAccentColor);
+        applyAccentColorLive(selectedAccentColor);
+      });
+    });
+
+    document.getElementById('custom-color-picker').addEventListener('input', (e) => {
+      selectedAccentColor = e.target.value;
+      setActiveSwatch(selectedAccentColor);
+      applyAccentColorLive(selectedAccentColor);
+    });
+  }
+
+  function setActiveSwatch(color) {
+    const swatches = document.querySelectorAll('.swatch-btn');
+    swatches.forEach(btn => {
+      if (btn.getAttribute('data-color').toLowerCase() === color.toLowerCase()) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  function applyAccentColorLive(color) {
+    document.documentElement.style.setProperty('--primary-color', color);
+    // Darken for hover variable
+    let darkened = darkenHex(color, 15);
+    document.documentElement.style.setProperty('--primary-hover', darkened);
+  }
+
+  function updateThemeToggleLabel() {
+    const theme = localStorage.getItem('cms_theme') || 'light';
+    const label = document.getElementById('theme-btn-label');
+    const icon = document.getElementById('theme-btn-icon');
+    
+    if (theme === 'dark') {
+      label.textContent = "Switch to Light Mode";
+      icon.className = "bi bi-sun-fill text-warning";
+    } else {
+      label.textContent = "Switch to Dark Mode";
+      icon.className = "bi bi-moon-stars-fill text-primary";
+    }
+  }
+
+  function updateDataStats() {
+    const students = getAllStudents();
+    const staffList = getAllStaff();
+    const attendance = getAttendanceData();
+    const marks = getMarksData();
+    const logs = getActivityLog();
+
+    document.getElementById('data-stat-students').textContent = students.length;
+    document.getElementById('data-stat-staff').textContent = staffList.length;
+    
+    // Count attendance entries
+    let attCount = 0;
+    Object.keys(attendance).forEach(id => {
+      attCount += Object.keys(attendance[id]).length;
+    });
+    document.getElementById('data-stat-attendance').textContent = attCount;
+
+    document.getElementById('data-stat-marks').textContent = Object.keys(marks).length * 5;
+    document.getElementById('data-stat-logs').textContent = logs.length;
+
+    // Local Storage Size Estimator
+    let totalBytes = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        totalBytes += (localStorage[key].length * 2);
+      }
+    }
+    const kb = (totalBytes / 1024).toFixed(2);
+    document.getElementById('data-stat-storage').textContent = `${kb} KB`;
+  }
+
+  function saveBrandingSettings() {
+    const newName = document.getElementById('setting-college-name').value.trim() || 'Apex College';
+    const newTagline = document.getElementById('setting-tagline').value.trim();
+    const newLogo = document.getElementById('setting-logo-type').value;
+
+    const config = {
+      collegeName: newName,
+      tagline: newTagline,
+      accentColor: selectedAccentColor,
+      logoType: newLogo
+    };
+
+    localStorage.setItem('cms_branding', JSON.stringify(config));
+    
+    // Log action
+    logActivity('SETTINGS SAVED', 'Branding, accents, and institution layouts modified.', 'success');
+    showToast("Settings saved successfully! Reloading...", "success");
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
+
+  function confirmClearLog() {
+    if (confirm("Are you sure you want to delete the activity log database? This action is irreversible.")) {
+      localStorage.setItem('cms_activity_log', JSON.stringify([]));
+      localStorage.setItem('cms_unread_notifications_count', '0');
+      showToast("Activity history cleared.", "success");
+      updateDataStats();
+    }
+  }
+
+  function confirmResetAll() {
+    if (confirm("WARNING: This will delete ALL custom student records, marks grids, staff registers, branding details, and reset user credentials to standard SEED data. Proceed?")) {
+      localStorage.clear();
+      showToast("Database destroyed. Portal resetting...", "danger");
+      setTimeout(() => {
+        window.location.href = '../index.html';
+      }, 1500);
+    }
+  }
+</script>
+</body>
+</html>

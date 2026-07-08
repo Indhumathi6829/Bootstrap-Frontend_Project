@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notices & Broadcasts - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <div class="row g-4">
+        <!-- Left: Post Announcement (Staff can only post to Students) -->
+        <div class="col-12 col-lg-5">
+          <div class="card glass-card p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-megaphone-fill me-2"></i>Post a Notice</h5>
+            <form id="ann-form" onsubmit="handlePost(event)" novalidate>
+              <div class="mb-3">
+                <label for="ann-title" class="form-label small fw-medium text-secondary">Title <span class="text-danger">*</span></label>
+                <input type="text" id="ann-title" class="form-control" placeholder="e.g. Assignment Submission Deadline" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-medium text-secondary">Target Audience</label>
+                <div class="form-control bg-light" style="cursor:default;">Students Only</div>
+                <div class="form-text" style="font-size:0.75rem;">Faculty can only broadcast to students.</div>
+              </div>
+              <div class="mb-3">
+                <label for="ann-message" class="form-label small fw-medium text-secondary">Message <span class="text-danger">*</span></label>
+                <textarea id="ann-message" class="form-control" rows="5" placeholder="Write your notice here..." required></textarea>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Publish Notice</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: All visible announcements -->
+        <div class="col-12 col-lg-7">
+          <div class="card glass-card p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">College Announcements & Notices</h5>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-3" id="ann-tabs">
+              <li class="nav-item"><a class="nav-link active" onclick="filterAnn('All')" href="javascript:void(0)" id="tab-all">All</a></li>
+              <li class="nav-item"><a class="nav-link" onclick="filterAnn('Students Only')" href="javascript:void(0)" id="tab-students">For Students</a></li>
+              <li class="nav-item"><a class="nav-link" onclick="filterAnn('Staff Only')" href="javascript:void(0)" id="tab-staff">For Staff</a></li>
+            </ul>
+
+            <div id="ann-list" class="d-flex flex-column gap-3" style="max-height: 480px; overflow-y: auto;">
+              <p class="text-secondary text-center py-3 small">Loading announcements...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+
+<script>
+  let currentFilter = 'All';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => filterAnn('All'), 100);
+  });
+
+  function getAnnouncements() {
+    return JSON.parse(localStorage.getItem('cms_announcements') || '[]');
+  }
+
+  function filterAnn(type) {
+    currentFilter = type;
+    // Update tab styles
+    ['All', 'Students Only', 'Staff Only'].forEach(t => {
+      const map = { 'All': 'tab-all', 'Students Only': 'tab-students', 'Staff Only': 'tab-staff' };
+      const el = document.getElementById(map[t]);
+      if (el) el.classList.toggle('active', t === type);
+    });
+    renderAnnouncements();
+  }
+
+  function renderAnnouncements() {
+    const list = getAnnouncements().sort((a, b) => new Date(b.date) - new Date(a.date));
+    const filtered = currentFilter === 'All' ? list.filter(a => a.audience !== 'Students Only') : list.filter(a => a.audience === currentFilter || a.audience === 'All');
+
+    const container = document.getElementById('ann-list');
+    container.innerHTML = '';
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<p class="text-center text-secondary py-3 small">No notices for this category.</p>`;
+      return;
+    }
+
+    const session = getSession();
+
+    filtered.forEach(a => {
+      const audClass = a.audience === 'All' ? 'bg-secondary' : a.audience === 'Students Only' ? 'bg-warning text-dark' : 'bg-info';
+      const canDelete = session && a.postedBy === (session.username);
+      const div = document.createElement('div');
+      div.className = 'card p-3 border border-light-subtle shadow-sm';
+      div.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <h6 class="fw-bold mb-0">${a.title}</h6>
+          <span class="badge ${audClass} small">${a.audience}</span>
+        </div>
+        <p class="small text-secondary mb-2">${a.message}</p>
+        <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-10" style="font-size:0.72rem;">
+          <span class="text-secondary">By <strong>${a.postedBy}</strong></span>
+          <span class="text-secondary">${a.date}</span>
+        </div>
+        ${canDelete ? `<div class="text-end mt-1"><button onclick="deleteNotice('${a.id}')" class="btn btn-sm btn-link text-danger p-0" style="font-size:0.75rem;"><i class="bi bi-trash me-1"></i>Delete</button></div>` : ''}
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function handlePost(e) {
+    e.preventDefault();
+    const title = document.getElementById('ann-title').value.trim();
+    const msg = document.getElementById('ann-message').value.trim();
+    if (!title || !msg) { showToast("Please fill in all fields.", "warning"); return; }
+
+    const session = getSession();
+    const list = getAnnouncements();
+    const newId = 'ANN' + Date.now();
+
+    list.unshift({
+      id: newId,
+      title,
+      message: msg,
+      audience: 'Students Only',
+      postedBy: session ? session.username : 'Faculty',
+      date: new Date().toISOString().split('T')[0]
+    });
+
+    localStorage.setItem('cms_announcements', JSON.stringify(list));
+    logActivity('NOTICE POSTED', `Staff posted notice: "${title}"`, 'info');
+    showToast("Notice published successfully!", "success");
+    document.getElementById('ann-form').reset();
+    renderAnnouncements();
+  }
+
+  function deleteNotice(id) {
+    let list = getAnnouncements();
+    list = list.filter(a => a.id !== id);
+    localStorage.setItem('cms_announcements', JSON.stringify(list));
+    showToast("Notice deleted.", "success");
+    renderAnnouncements();
+  }
+</script>
+</body>
+</html>

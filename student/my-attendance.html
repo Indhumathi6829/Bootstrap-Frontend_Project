@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Attendance - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .att-log-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; }
+    .att-log-badge.present { background: rgba(16,185,129,0.12); color: #10b981; }
+    .att-log-badge.absent  { background: rgba(239,68,68,0.12); color: #ef4444; }
+  </style>
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <!-- Summary KPI Row -->
+      <div class="row g-4 mb-4">
+        <div class="col-12 col-md-4">
+          <div class="card glass-card p-4 text-center">
+            <p class="text-secondary small fw-medium mb-1">Overall Attendance</p>
+            <h1 class="fw-bold mb-0" id="kpi-overall" style="color: var(--primary-color);">0%</h1>
+          </div>
+        </div>
+        <div class="col-6 col-md-4">
+          <div class="card glass-card p-4 text-center">
+            <p class="text-secondary small fw-medium mb-1">Days Present</p>
+            <h2 class="fw-bold mb-0 text-success" id="kpi-present">0</h2>
+          </div>
+        </div>
+        <div class="col-6 col-md-4">
+          <div class="card glass-card p-4 text-center">
+            <p class="text-secondary small fw-medium mb-1">Days Absent</p>
+            <h2 class="fw-bold mb-0 text-danger" id="kpi-absent">0</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Warning Banner -->
+      <div id="att-warning" class="alert alert-danger d-none mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Attendance Alert:</strong> Your attendance is below the mandatory 75% threshold. Please contact your faculty advisor.
+      </div>
+
+      <!-- Attendance Log Table -->
+      <div class="card glass-card p-4">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
+          <h5 class="fw-bold mb-0">Attendance Log History</h5>
+          <div class="d-flex gap-2">
+            <select id="filter-status" class="form-select form-select-sm" onchange="renderLogs()">
+              <option value="">All</option>
+              <option value="Present">Present Only</option>
+              <option value="Absent">Absent Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Day</th>
+                <th class="text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="att-log-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="text-secondary small mt-3 text-center" id="log-status">No records loaded.</div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+
+<script>
+  let logEntries = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadAttendancePage, 100);
+  });
+
+  function loadAttendancePage() {
+    const session = getSession();
+    if (!session) return;
+    const student = getStudentById(session.linkedId);
+    if (!student) return;
+
+    const attendance = getAttendanceData()[session.linkedId] || {};
+    const dates = Object.keys(attendance).sort((a, b) => new Date(b) - new Date(a));
+
+    let presentCount = 0;
+    let absentCount = 0;
+
+    logEntries = dates.map(d => {
+      const status = attendance[d];
+      if (status === 'Present') presentCount++;
+      else absentCount++;
+      return { date: d, status };
+    });
+
+    const total = dates.length;
+    const pct = total > 0 ? ((presentCount / total) * 100).toFixed(1) : 0;
+
+    document.getElementById('kpi-overall').textContent = `${pct}%`;
+    document.getElementById('kpi-present').textContent = presentCount;
+    document.getElementById('kpi-absent').textContent = absentCount;
+
+    if (parseFloat(pct) < 75 && total > 0) {
+      document.getElementById('att-warning').classList.remove('d-none');
+    }
+
+    renderLogs();
+  }
+
+  function renderLogs() {
+    const statusFilter = document.getElementById('filter-status').value;
+    const filtered = statusFilter ? logEntries.filter(e => e.status === statusFilter) : logEntries;
+
+    const tbody = document.getElementById('att-log-tbody');
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center py-5 text-secondary">No attendance records found.</td></tr>`;
+      document.getElementById('log-status').textContent = '';
+      return;
+    }
+
+    filtered.forEach((entry, idx) => {
+      const d = new Date(entry.date);
+      const dayName = d.toLocaleDateString('en-IN', { weekday: 'long' });
+      const formattedDate = d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: '2-digit' });
+      const statusClass = entry.status === 'Present' ? 'present' : 'absent';
+      const statusIcon = entry.status === 'Present' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="text-secondary small">${idx + 1}</td>
+        <td class="fw-medium">${formattedDate}</td>
+        <td class="text-secondary small">${dayName}</td>
+        <td class="text-center"><span class="att-log-badge ${statusClass}"><i class="bi ${statusIcon}"></i>${entry.status}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('log-status').textContent = `Showing ${filtered.length} record${filtered.length !== 1 ? 's' : ''}`;
+  }
+</script>
+</body>
+</html>

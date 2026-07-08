@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Announcements - Apex College</title>
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .ann-card { border-radius: 1rem; transition: transform 0.2s; }
+    .ann-card:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+    <!-- Dynamic Header & Sidebar injected by app.js -->
+
+    <div class="container-fluid p-4 animate-fade-in">
+
+      <div class="row g-4">
+        <!-- Left Side: Announcement Poster Form -->
+        <div class="col-12 col-lg-5">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-megaphone-fill me-2 text-indigo"></i>Post Announcement</h5>
+            
+            <form id="ann-form" onsubmit="handleFormSubmit(event)" novalidate>
+              <!-- Title -->
+              <div class="mb-3">
+                <label for="ann-title" class="form-label small fw-medium text-secondary">Announcement Title <span class="text-danger">*</span></label>
+                <input type="text" id="ann-title" class="form-control" placeholder="e.g. End Semester Exams Schedule" required>
+                <div class="invalid-feedback">Title is required.</div>
+              </div>
+
+              <!-- Audience -->
+              <div class="mb-3">
+                <label for="ann-audience" class="form-label small fw-medium text-secondary">Target Audience <span class="text-danger">*</span></label>
+                <select id="ann-audience" class="form-select" required>
+                  <option value="All">All Portal Users (Public)</option>
+                  <option value="Staff Only">Faculty / Staff Only</option>
+                  <option value="Students Only">Students Only</option>
+                </select>
+              </div>
+
+              <!-- Message -->
+              <div class="mb-3">
+                <label for="ann-message" class="form-label small fw-medium text-secondary">Message / Content <span class="text-danger">*</span></label>
+                <textarea id="ann-message" class="form-control" rows="6" placeholder="Write notice content here..." required></textarea>
+                <div class="invalid-feedback">Message content is required.</div>
+              </div>
+
+              <!-- Submit -->
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary py-2.5">Publish Broadcast</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Side: Notice History -->
+        <div class="col-12 col-lg-7">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Notice History</h5>
+            
+            <div id="notices-history-list" class="d-flex flex-column gap-3 overflow-y-auto" style="max-height: 480px;">
+              <!-- notices rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core Scripts -->
+<script src="../js/app.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(renderNoticeHistory, 80);
+  });
+
+  function getAnnouncements() {
+    const raw = localStorage.getItem('cms_announcements');
+    return raw ? JSON.parse(raw) : [];
+  }
+
+  function saveAnnouncements(list) {
+    localStorage.setItem('cms_announcements', JSON.stringify(list));
+  }
+
+  function renderNoticeHistory() {
+    const container = document.getElementById('notices-history-list');
+    if (!container) return;
+
+    const list = getAnnouncements();
+    // Sort newest first
+    list.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+    container.innerHTML = '';
+
+    if (list.length === 0) {
+      container.innerHTML = `<div class="text-center text-secondary py-5">No announcements published yet.</div>`;
+      return;
+    }
+
+    list.forEach(ann => {
+      let audClass = 'bg-primary';
+      if (ann.audience === 'Staff Only') audClass = 'bg-info';
+      if (ann.audience === 'Students Only') audClass = 'bg-warning text-dark';
+
+      const div = document.createElement('div');
+      div.className = 'card p-3 border border-light-subtle shadow-sm ann-card';
+      div.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <h6 class="fw-bold mb-0">${ann.title}</h6>
+          <span class="badge ${audClass} small">${ann.audience}</span>
+        </div>
+        <p class="text-secondary small mb-2 text-pre-line">${ann.message}</p>
+        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-secondary border-opacity-10" style="font-size: 0.72rem;">
+          <span class="text-secondary">Posted by: <strong>${ann.postedBy}</strong></span>
+          <span class="text-secondary">${ann.date}</span>
+        </div>
+        <div class="text-end mt-2">
+          <button onclick="deleteNotice('${ann.id}')" class="btn btn-sm btn-link text-danger text-decoration-none p-0" style="font-size:0.75rem;"><i class="bi bi-trash me-1"></i>Delete</button>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function handleFormSubmit(event) {
+    event.preventDefault();
+
+    const titleEl = document.getElementById('ann-title');
+    const messageEl = document.getElementById('ann-message');
+    const audienceEl = document.getElementById('ann-audience');
+
+    titleEl.classList.remove('is-invalid');
+    messageEl.classList.remove('is-invalid');
+
+    let isValid = true;
+    if (!titleEl.value.trim()) {
+      titleEl.classList.add('is-invalid');
+      isValid = false;
+    }
+    if (!messageEl.value.trim()) {
+      messageEl.classList.add('is-invalid');
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
+    const list = getAnnouncements();
+    const newId = 'ANN' + String(list.length + 101).substring(1); // e.g. ANN001
+
+    const newAnn = {
+      id: newId,
+      title: titleEl.value.trim(),
+      message: messageEl.value.trim(),
+      audience: audienceEl.value,
+      postedBy: "Administrator",
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    list.unshift(newAnn);
+    saveAnnouncements(list);
+
+    // Log system activity
+    logActivity('NOTICE POSTED', `Notice "${newAnn.title}" published targeting ${newAnn.audience}.`, 'info');
+
+    showToast("Announcement published successfully!", "success");
+
+    // Reset form states
+    document.getElementById('ann-form').reset();
+    renderNoticeHistory();
+  }
+
+  function deleteNotice(id) {
+    let list = getAnnouncements();
+    const notice = list.find(n => n.id === id);
+    list = list.filter(n => n.id !== id);
+    saveAnnouncements(list);
+
+    if (notice) {
+      logActivity('NOTICE DELETED', `Notice "${notice.title}" was removed.`, 'danger');
+    }
+
+    showToast("Notice removed successfully.", "success");
+    renderNoticeHistory();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile - Apex College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="app-container">
+  <main id="main-content">
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="text-center py-5 animate-fade-in">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-secondary mt-2">Fetching student profile...</p>
+    </div>
+
+    <!-- Not Found -->
+    <div id="not-found-alert" class="alert alert-danger d-none m-4" role="alert">
+      <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+      Student not found. <a href="my-students.html" class="alert-link">Return to My Students</a>.
+    </div>
+
+    <div class="container-fluid p-4 animate-fade-in d-none" id="profile-content">
+
+      <!-- Back + Print -->
+      <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <a href="my-students.html" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+          <i class="bi bi-arrow-left"></i> Back to Students
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-primary d-flex align-items-center gap-2">
+          <i class="bi bi-printer"></i> Print Profile
+        </button>
+      </div>
+
+      <!-- Profile Banner -->
+      <div class="card glass-card p-4 mb-4">
+        <div class="d-flex gap-4 align-items-center flex-wrap">
+          <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:90px; height:90px; font-size:2.5rem; background: var(--primary-color);" id="avatar-circle"></div>
+          <div>
+            <h3 class="fw-bold mb-1" id="profile-name">—</h3>
+            <p class="text-secondary mb-0" id="profile-meta">—</p>
+            <div class="d-flex gap-2 mt-2" id="profile-badges"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Personal Info -->
+        <div class="col-12 col-lg-6">
+          <div class="card glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Personal Details</h5>
+            <ul class="list-unstyled d-flex flex-column gap-2 text-secondary small">
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Student ID</span><strong class="text-dark-theme-override" id="d-id">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Roll Number</span><strong class="text-dark-theme-override" id="d-roll">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Gender</span><strong class="text-dark-theme-override" id="d-gender">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Date of Birth</span><strong class="text-dark-theme-override" id="d-dob">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Blood Group</span><strong class="text-dark-theme-override" id="d-blood">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Email</span><strong class="text-dark-theme-override" id="d-email">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Phone</span><strong class="text-dark-theme-override" id="d-phone">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Address</span><strong class="text-dark-theme-override" id="d-address" style="max-width:180px; text-align:right;">—</strong></li>
+              <li class="d-flex justify-content-between py-1"><span>Parent / Guardian</span><strong class="text-dark-theme-override" id="d-parent">—</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Academic + Marks -->
+        <div class="col-12 col-lg-6">
+          <div class="card glass-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Academic Info</h5>
+            <ul class="list-unstyled d-flex flex-column gap-2 text-secondary small">
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Department</span><strong class="text-dark-theme-override" id="d-dept">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Year / Semester</span><strong class="text-dark-theme-override" id="d-year">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>Section</span><strong class="text-dark-theme-override" id="d-section">—</strong></li>
+              <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10"><span>CGPA</span><strong class="text-dark-theme-override fw-bold" id="d-cgpa">—</strong></li>
+              <li class="d-flex justify-content-between py-1"><span>Attendance %</span><strong id="d-att" class="fw-bold">—</strong></li>
+            </ul>
+          </div>
+
+          <!-- Subject Marks -->
+          <div class="card glass-card p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Exam Scorecard</h5>
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead><tr><th>Subject</th><th class="text-center">Score / 100</th><th class="text-center">Grade</th></tr></thead>
+              <tbody id="marks-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/student.js"></script>
+<script src="../js/staff.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadProfile, 100);
+  });
+
+  function loadProfile() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    document.getElementById('loading-spinner').classList.add('d-none');
+
+    if (!id) { document.getElementById('not-found-alert').classList.remove('d-none'); return; }
+    const s = getStudentById(id);
+    if (!s) { document.getElementById('not-found-alert').classList.remove('d-none'); return; }
+
+    document.getElementById('profile-content').classList.remove('d-none');
+
+    // Avatar
+    const initials = s.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    document.getElementById('avatar-circle').textContent = initials;
+
+    // Header
+    document.getElementById('profile-name').textContent = s.name;
+    document.getElementById('profile-meta').textContent = `${s.department} · ${s.year} · Roll: ${s.rollNumber}`;
+
+    const badges = document.getElementById('profile-badges');
+    const attBadge = s.attendancePercent < 75 ? `<span class="badge bg-danger">Low Attendance</span>` : '';
+    const cgpaBadge = s.cgpa < 5.0 ? `<span class="badge bg-warning text-dark">Low CGPA</span>` : '';
+    badges.innerHTML = attBadge + cgpaBadge;
+
+    // Personal
+    document.getElementById('d-id').textContent = s.id;
+    document.getElementById('d-roll').textContent = s.rollNumber;
+    document.getElementById('d-gender').textContent = s.gender;
+    document.getElementById('d-dob').textContent = s.dob;
+    document.getElementById('d-blood').textContent = s.bloodGroup || 'N/A';
+    document.getElementById('d-email').textContent = s.email;
+    document.getElementById('d-phone').textContent = s.phone;
+    document.getElementById('d-address').textContent = s.address;
+    document.getElementById('d-parent').textContent = `${s.parentName} (${s.parentPhone})`;
+
+    // Academic
+    document.getElementById('d-dept').textContent = s.department;
+    document.getElementById('d-year').textContent = `${s.year} · Sem ${s.semester}`;
+    document.getElementById('d-section').textContent = s.section || 'A';
+    document.getElementById('d-cgpa').textContent = (s.cgpa || 0).toFixed(2);
+    const attEl = document.getElementById('d-att');
+    attEl.textContent = `${s.attendancePercent}%`;
+    attEl.className = `fw-bold ${s.attendancePercent < 75 ? 'text-danger' : 'text-success'}`;
+
+    // Marks
+    const marks = getMarksData()[s.id] || {};
+    const subjects = [
+      { key: 'mathematics', label: 'Mathematics' },
+      { key: 'programming', label: 'Programming' },
+      { key: 'database', label: 'Database Systems' },
+      { key: 'operatingSystems', label: 'Operating Systems' },
+      { key: 'computerNetworks', label: 'Computer Networks' }
+    ];
+    const tbody = document.getElementById('marks-table-body');
+    tbody.innerHTML = '';
+    subjects.forEach(sub => {
+      const score = marks[sub.key] || 0;
+      const grade = getGradeFromPercentage(score);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${sub.label}</td><td class="text-center fw-semibold">${score}</td><td class="text-center"><span class="badge ${grade === 'F' ? 'bg-danger' : grade === 'A+' || grade === 'A' ? 'bg-success' : 'bg-warning text-dark'}">${grade}</span></td>`;
+      tbody.appendChild(tr);
+    });
+  }
+</script>
+</body>
+</html>
