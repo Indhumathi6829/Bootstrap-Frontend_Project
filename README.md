@@ -7,7 +7,6 @@ A realistic, role-based **College Management System** built entirely with **HTML
 
 The system simulates a real college portal with three distinct user roles — **Admin**, **Staff (Faculty)**, and **Student** — each with their own login, dashboard, permissions, and workflows.
 
-> ⚠️ **Note:** Authentication and authorization in this project are simulated on the client side for demonstration/portfolio purposes. There is no real backend, password hashing, or server-side security. Do not use this as-is for a production system handling real student data.
 
 ---
 
