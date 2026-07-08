@@ -46,7 +46,7 @@ python -m http.server 8000
 ## 🗂 Project Structure
 
 ```
-student-management-system/
+college-management-system/
 ├── index.html            # Pre-login College Homepage
 ├── login.html            # Unified login portal (with quick-select credentials card)
 ├── about.html            # Public Info page
